@@ -1,0 +1,25 @@
+export("choose.models", "choose.MSMN", "choose.MSMSN", "choose.MSMSNC",
+       "choose.MSSMN", "choose2", "dtgamma", "estimate.MCN",
+       "estimate.MN", "estimate.MSCEC", "estimate.MSCN",
+       "estimate.MSCN2", "estimate.MSL", "estimate.MSN",
+       "estimate.MSNC", "estimate.MSSL", "estimate.MSSL2",
+       "estimate.MSSLEC", "estimate.MSTEC", "estimate.MSTN",
+       "estimate.MSTT", "estimate.MT", "FI.MCN", "FI.MN", "FI.MSCEC",
+       "FI.MSCN", "FI.MSCN2", "FI.MSL", "FI.MSN", "FI.MSNC", "FI.MSSL",
+       "FI.MSSL2", "FI.MSSLEC", "FI.MSTEC", "FI.MSTN", "FI.MSTT",
+       "FI.MT", "matrix.sqrt", "mbackcrit", "mbacksign", "plotMahal",
+       "qtgamma", "rMCN", "rMN", "rMSCEC", "rMSCN", "rMSCN2", "rMSL",
+       "rMSN", "rMSNC", "rMSSL", "rMSSL2", "rMSSLEC", "rMSTEC",
+       "rMSTN", "rMSTT", "rMT", "se.est", "vech", "xpnd")
+importFrom("graphics", "abline")
+importFrom("stats", "cov", "dcauchy", "dgamma", "dnorm", "integrate",
+             "mahalanobis", "optim", "optimize", "pcauchy", "pchisq",
+             "pgamma", "pnorm", "pt", "qchisq", "qf", "qgamma", "qnorm",
+             "rbeta", "rbinom", "rgamma", "rnorm", "runif")
+importFrom("MASS","mvrnorm")
+importFrom("moments","skewness") 
+importFrom("mvtnorm","dmvnorm","dmvt")
+importFrom("parallel","detectCores","stopCluster","makeCluster")
+importFrom("doParallel","registerDoParallel")
+importFrom("foreach","foreach",'%dopar%')
+importFrom("clusterGeneration","genPositiveDefMat")

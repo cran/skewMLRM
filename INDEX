@@ -1,0 +1,24 @@
+FI                Observed Fisher information matrix for 
+                  distributions in the MSMN, MSMSN, MSSMN
+                  and MSMSNC classes.
+choose2           Select a distribution in the MSMN, MSSMN, MSMSN 
+                  or/and MSMSNC classes and perform covariates 
+                  selection.
+chooseM           Choose a distribution in the MSMN, MSMSN, MSSMN
+                  and MSMSNC classes.
+dtgamma           Truncated gamma distribution.
+estimateM         Fitting a model in the MSMN, MSMSN, MSSMN and
+                  MSMSNC classes.
+matrix.sqrt       Square root of a matrix.
+mbackcrit         Multivariate backward based on the AIC or BIC
+                  criteria.
+mbacksign         Multivariate Backward Based on Significance.
+plotMahal         Mahalanobis distance for fitted models in the
+                  MSMN, MSMSN, MSSMN and MSMSNC classes.
+rM                Random generation for models in the MSMN,
+                  MSMSN, MSSMN and MSMSNC classes.
+se.est            Estimated standard errors for the estimated
+                  parameters in distributions belonging to the
+                  MSMN, MSMSN, MSSMN and MSMSNC classes.
+vech              Vectorize a symmetric matrix.
+xpnd              Reconstitute a symmetric matrix from a vector. 
