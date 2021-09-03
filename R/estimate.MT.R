@@ -1,5 +1,5 @@
 estimate.MT <-
-function(y,X,max.iter=1000,prec=1e-4,est.var=TRUE)
+function(y,X,max.iter=1000,prec=1e-4,est.var=TRUE,nu.min=2.0001)
 {
   lmtr<-function(P,y,X){
   n=nrow(y)
@@ -31,9 +31,11 @@ lmstvr<-function(v,b,B,h,y,X){
     d[i]<-t(e[i,])%*%invB%*%invB%*%e[i,]}
   lv=sum(log(2*gamma((v+p)/2)/(gamma(v/2)*(pi*v)^(p/2))*(1+d/v)^(-(v+p)/2)))
   return(lv)} 
+y.or<-y
+X.or<-X
 y<-as.matrix(y)
-if(!is.matrix(y))
-        stop("y must have at least one element")
+if(!is.numeric(nu.min) | nu.min<=0) stop("nu.min should be a positive number")
+if(!is.matrix(y)) stop("y must have at least one element")
   if(is.null(X)){X<-array(c(diag(ncol(y))),c(ncol(y),ncol(y),nrow(y)))}
   if(is.array(X)==FALSE & is.list(X)==FALSE)
         stop("X must be an array or a list")
@@ -86,8 +88,8 @@ X<-Xs}
       d[i]<-t(e[i,])%*%invS%*%e[i,]
     }
     u<-(v+p)/(v+d)
-    aux<-pmax(as.vector(e%*%invB%*%h),-37)
-    W<-as.matrix(dnorm(aux)/pnorm(aux))
+    aux<-as.vector(e%*%invB%*%h)
+    W<-as.matrix(exp(dnorm(aux,log=TRUE)-pnorm(aux,log.p=TRUE)))
     t<-e%*%invB%*%h+W 
     S<-1/n*(t(e)%*%diag(as.vector(u),n)%*%e)
     invS<-solve(S)
@@ -100,7 +102,7 @@ X<-Xs}
       b1<-b1+t(X[[i]])%*%(as.numeric(u[i])*(invB%*%invB)%*%y[i,]-as.numeric(t[i])*invB%*%h+invB%*%h%*%t(h)%*%invB%*%y[i,])
     }
     b<-solve(b0)%*%b1
-    V<-optim(v,lmstvr,gr=NULL,b,B,h,y,X,method="L-BFGS-B",lower=2.0001,upper=100,control=list(fnscale=-1,maxit=20))
+    V<-optim(v,lmstvr,gr=NULL,b,B,h,y,X,method="L-BFGS-B",lower=nu.min,upper=100,control=list(fnscale=-1,maxit=20))
     v<-as.numeric(V$par)
     P<-c(as.vector(b),vech(B),as.vector(h),v)
     logvero=lmtr(P,y,X)
@@ -114,7 +116,7 @@ X<-Xs}
   BIC=-2*logvero+log(nrow(y))*npar
  P<-matrix(P[-c(q+p*(p+1)/2+1:p)],ncol=1)
  colnames(P)<-c("estimate") 
- conv.problem=0
+ conv.problem=1
  if(est.var)
  {
  MI.obs<-  FI.MT(P,y,X)
@@ -122,11 +124,11 @@ X<-Xs}
  se=c()
  if(is.numeric(test) & max(diag(test))<0) 
  {
+ conv.problem=0
  se=sqrt(-diag(test))
  P<-cbind(P,se)
  colnames(P)<-c("estimate","s.e.")
  }
- else conv.problem=1
  }
 conv<-ifelse(iter<=max.iter & crit<=prec, 0, 1)
  tempo=as.numeric(aa[3])
@@ -135,8 +137,15 @@ conv<-ifelse(iter<=max.iter & crit<=prec, 0, 1)
  for(j in 1:p)
  {indices=c(indices,paste(j,aux[[j]],sep=""))}
  rownames(P)<-c(paste("beta",1:q,sep=""),paste("alpha",indices,sep=""),"nu")
-  ll<-list(estimate=P,logLik=logvero,AIC=AIC,BIC=BIC,iterations=iter,time=tempo,conv=conv)
-  if(conv.problem==1) ll$warnings="Standard errors can't be estimated: Numerical problems with the inversion of the information matrix"
+if(conv.problem==0) ll<-list(coefficients=P[,1],se=P[,2],logLik=logvero,AIC=AIC,BIC=BIC,iterations=iter,time=tempo,conv=conv,dist="MT",class="MSMN",n=nrow(y))
+else{
+  ll<-list(coefficients=P[,1],logLik=logvero,AIC=AIC,BIC=BIC,iterations=iter,time=tempo,conv=conv,dist="MT",class="MSMN",n=nrow(y))
+ll$warnings="Standard errors can't be estimated: Numerical problems with the inversion of the information matrix"
+}
  object.out<-ll
+ class(object.out) <- "skewMLRM"
+ object.out$y<-y.or
+ object.out$X<-X.or
+ object.out$"function"<-"estimate.MT"
 object.out
 }

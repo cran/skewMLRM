@@ -63,8 +63,13 @@ integrate(aux.IPhi.MSMSNC,lower=0,upper=max.int,a,d,p,w,dist=dist,nu=nu,abs.tol=
 }
  if(is.array(X))
   {Xs<-list()
+if(ncol(y)>1 | !is.matrix(X)){
      for (i in 1:nrow(y)){
-    Xs[[i]]<- matrix(t(X[,,i]),nrow=ncol(y))};X<-Xs} 
+    Xs[[i]]<- matrix(t(X[,,i]),nrow=ncol(y))}}
+if(ncol(y)==1 & is.matrix(X)){
+     for (i in 1:nrow(y)){
+    Xs[[i]]<- matrix(t(X[i,]),nrow=1)}} 
+X<-Xs}
  # theta=list(beta=beta.new,Sigma=Sigma.new,eta=eta.new,nu=nu,dif=dif,iter=i)
   p=ncol(y)
   n=nrow(y)

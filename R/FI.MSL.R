@@ -8,10 +8,15 @@ if(!is.matrix(y))
   if(is.null(X)){X<-array(c(diag(ncol(y))),c(ncol(y),ncol(y),nrow(y)))}
   if(is.array(X)==FALSE & is.list(X)==FALSE)
         stop("X must be an array or a list")
-  if(is.array(X))
+ if(is.array(X))
   {Xs<-list()
+if(ncol(y)>1 | !is.matrix(X)){
      for (i in 1:nrow(y)){
-    Xs[[i]]<- matrix(t(X[,,i]),nrow=ncol(y))};X<-Xs} 
+    Xs[[i]]<- matrix(t(X[,,i]),nrow=ncol(y))}}
+if(ncol(y)==1 & is.matrix(X)){
+     for (i in 1:nrow(y)){
+    Xs[[i]]<- matrix(t(X[i,]),nrow=1)}} 
+X<-Xs}
   if (ncol(y) != nrow(X[[1]]))
         stop("y does not have the same number of columns than X")
   if (nrow(y) != length(X))

@@ -5,7 +5,7 @@
 \alias{choose.MSSMN}
 \alias{choose.MSMSNC}
 \title{
-Choose a distribution in the MSMN, MSMSN, MSSMN and MSMSNC classes
+Choose a distribution in the MSMN, MSMSN, MSSMN and/or MSMSNC classes
 }
 \description{
 choose.xxx select a model inside the xxx class, where xxx is the multivariate scale mixtures of normal (MSMN),
@@ -69,15 +69,26 @@ skew-contaminated-Expected-Cauchy (MSCEC). See Kahrari et al. (2020) for details
 Note: the MSN distribution belongs to both, MSMSN and MSSMN classes.
 }
 \value{
-A list containing the following components:
-\item{fitted.models}{A vector with the fitted models}
-\item{selected.model}{Selected model based on the specified criteria (AIC or BIC)}
-\item{estimate}{A matrix with the estimates (and standard errors, if est.var=TRUE) for the selected model}
+an object of class "skewMLRM" is returned. The object returned for this functions is a list containing the following
+components:
+
+\item{coefficients}{A named vector of coefficients}
+\item{se}{A named vector of the standard errors for the estimated coefficients. Valid if est.var is TRUE and 
+the hessian matrix is invertible.}
 \item{logLik}{The log-likelihood function evaluated in the estimated parameters for the selected model}
 \item{AIC}{Akaike's Information Criterion for the selected model}
 \item{BIC}{Bayesian's Information Criterion for the selected model}
-\item{iterations}{the number of iterations until convergence (if attached) for the selected model}
+\item{iterations}{the number of iterations until convergence (if attached)}
 \item{conv}{An integer code for the selected model. 0 indicates successful completion. 1 otherwise.}
+\item{dist}{The distribution for which was performed the estimation.}
+\item{class}{The class for which was performed the estimation.}
+\item{function}{a string with the name of the used function.}
+\item{choose.crit}{the specified criteria to choose the distribution.}
+\item{y}{The multivariate vector of responses. The univariate case also is supported.}
+\item{X}{The regressor matrix (in a list form).}
+\item{fitted.models}{A vector with the fitted models}
+\item{selected.model}{Selected model based on the specified criteria.}
+\item{comment}{A comment indicating how many coefficients were eliminated}
 }
 \references{
 Kahrari, F., Arellano-Valle, R.B., Ferreira, C.S., Gallardo, D.I. (2020) Some Simulation/computation
@@ -124,11 +135,14 @@ for(i in 1:n) {
 ##See the covariate matrix X
 ##X
 ##Select a distribution within the MSMN class.
-choose.MSMN(y,X)
+fit.MSMN=choose.MSMN(y,X)
+summary(fit.MSMN)
 \donttest{
 ##Identical process within the MSSMN class.
 ##may take some time on some systems
-choose.MSSMN(y,X)}
+fit.MSSMN=choose.MSSMN(y,X)
+summary(fit.MSSMN)
+}
 }
 % Add one or more standard keywords, see file 'KEYWORDS' in the
 % R documentation directory (show via RShowDoc("KEYWORDS")):

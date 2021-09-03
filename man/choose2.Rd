@@ -13,7 +13,7 @@ the Akaike's information criteria (AIC) or Schwartz's information criteria (BIC)
 
 \usage{
 choose2(y, X = NULL, max.iter = 1000, prec = 1e-04, class = "MSMN", 
-   est.var = TRUE, criteria = "AIC", criteria.cov = "significance", 
+   est.var = TRUE, criteria = "AIC", criteria.cov = "AIC", 
    significance = 0.05, cluster = FALSE)
 }
 \arguments{
@@ -40,10 +40,11 @@ Logical. If TRUE the standard errors are estimated.
 criteria to perform the selection model: AIC (default) or BIC.
 }
   \item{criteria.cov}{
-criteria to perform the covariates selection: significance (default), AIC or BIC.
+criteria to perform the covariates selection: AIC (default), BIC or significance.
 }
   \item{significance}{
-the level of significance to perform the covariate selection. By default is 0.05.
+the level of significance to perform the covariate selection. Only used if criteria.cov="significance". 
+By default is 0.05.
 }
   \item{cluster}{
 logical. If TRUE, parallel computing is used. FALSE is the default value.
@@ -70,14 +71,29 @@ See Kahrari et al. (2020) for details.
 Note: the MSN distribution belongs to both, MSMSN and MSSMN classes.
 }
 \value{
-\item{fitted.models}{A vector with the fitted models}
-\item{selected.model}{Selected model based on the specified criteria (AIC or BIC)}
-\item{comment}{A comment indicating how many coefficients were eliminated}
-\item{estimate}{A matrix with the estimates (and standard errors, if est.var=TRUE) for the selected model}
+an object of class "skewMLRM" is returned. The object returned for this functions is a list containing the following
+components:
+
+\item{coefficients}{A named vector of coefficients}
+\item{se}{A named vector of the standard errors for the estimated coefficients. Valid if est.var is TRUE and 
+the hessian matrix is invertible.}
 \item{logLik}{The log-likelihood function evaluated in the estimated parameters for the selected model}
 \item{AIC}{Akaike's Information Criterion for the selected model}
 \item{BIC}{Bayesian's Information Criterion for the selected model}
+\item{iterations}{the number of iterations until convergence (if attached)}
 \item{conv}{An integer code for the selected model. 0 indicates successful completion. 1 otherwise.}
+\item{dist}{The distribution for which was performed the estimation.}
+\item{class}{The class for which was performed the estimation.}
+\item{function}{a string with the name of the used function.}
+\item{choose.crit}{the specified criteria to choose the distribution.}
+\item{choose.crit.cov}{the specified criteria to choose the covariates.}
+\item{y}{The multivariate vector of responses. The univariate case also is supported.}
+\item{X}{The regressor matrix (in a list form).}
+\item{fitted.models}{A vector with the fitted models}
+\item{selected.model}{Selected model based on the specified criteria.}
+\item{fitted.class}{Selected class based on the specified criteria.}
+\item{comment}{A comment indicating how many coefficients were eliminated}
+
 %% ...
 }
 \references{
@@ -128,17 +144,11 @@ for(i in 1:n) {
 \donttest{
 ##Select a distribution within the MSMN class. Then, perform covariate 
 ##selection based on the significance
-choose2(y, X, class="MSMN")
+fit.MSMN=choose2(y, X, class="MSMN")
+summary(fit.MSMN)
 ##Identical process within the MSSMN class.
 ##may take some time on some systems
-choose2(y, X, class="MSSMN")}
+fit.MSSMN=choose2(y, X, class="MSSMN")
+summary(fit.MSSMN)
 }
-% Add one or more standard keywords, see file 'KEYWORDS' in the
-% R documentation directory (show via RShowDoc("KEYWORDS")):
-%\keyword{ ~model selection }
-%\keyword{ ~covariates selection }
-% Use only one keyword per line.
-% For non-standard keywords, use \concept instead of \keyword:
-% \concept{ ~cpt1 }
-% \concept{ ~cpt2 }
-% Use only one concept per line.
+}

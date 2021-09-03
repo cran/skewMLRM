@@ -1,6 +1,7 @@
 estimate.MSCN <-
 function(y,X,max.iter=1000,prec=1e-4,est.var=TRUE)
 {
+y.or<-y;X.or<-X
 lmscr<-function(P,y,X){
   n=nrow(y)
   p=ncol(y)
@@ -169,7 +170,7 @@ X<-Xs}
   #informacao=0#mifmscr(P,y,X)
  P<-matrix(P,ncol=1)
  colnames(P)<-c("estimate") 
- conv.problem=0
+ conv.problem=1
  if(est.var)
  {
  MI.obs<- FI.MSCN(P,y,X)
@@ -177,11 +178,11 @@ X<-Xs}
  se=c()
  if(is.numeric(test) & max(diag(test))<0) 
  {
+ conv.problem=0
  se=sqrt(-diag(test))
  P<-cbind(P,se)
  colnames(P)<-c("estimate","s.e.")
  }
- else conv.problem=1
  }
 conv<-ifelse(iter<=max.iter & crit<=prec, 0, 1)
   tempo=as.numeric(aa[3])#as.numeric(t1-t0)
@@ -190,8 +191,15 @@ conv<-ifelse(iter<=max.iter & crit<=prec, 0, 1)
  for(j in 1:p)
  {indices=c(indices,paste(j,aux[[j]],sep=""))}
  rownames(P)<-c(paste("beta",1:q,sep=""),paste("alpha",indices,sep=""),paste("lambda",1:p,sep=""),"nu","gamma")
-  ll<-list(estimate=P,logLik=logvero,AIC=AIC,BIC=BIC,iterations=iter,time=tempo,conv=conv)
- if(conv.problem==1) ll$warnings="Standard errors can't be estimated: Numerical problems with the inversion of the information matrix"
+if(conv.problem==0) ll<-list(coefficients=P[,1],se=P[,2],logLik=logvero,AIC=AIC,BIC=BIC,iterations=iter,time=tempo,conv=conv,dist="MSCN",class="MSSMN",n=nrow(y))
+else {
+ll<-list(coefficients=P[,1],logLik=logvero,AIC=AIC,BIC=BIC,iterations=iter,time=tempo,conv=conv,dist="MSCN",class="MSSMN",n=nrow(y))
+ll$warnings="Standard errors can't be estimated: Numerical problems with the inversion of the information matrix"
+}
  object.out<-ll
+ class(object.out) <- "skewMLRM"
+ object.out$"function"<-"estimate.MSCN"
+ object.out$y<-y.or
+ object.out$X<-X.or
 object.out
 }

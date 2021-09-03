@@ -1,6 +1,7 @@
 estimate.MSNC <-
 function(y,X=NULL,max.iter=1000,prec=1e-4,est.var=TRUE)
 {
+y.or<-y;X.or<-X
 lmsncr<- function(y,X=NULL,beta0,Sigma,lambda)
 {
   if(is.array(X)==FALSE & is.list(X)==FALSE)
@@ -73,10 +74,15 @@ if(!is.matrix(y))
   if(is.null(X)){X<-array(c(diag(ncol(y))),c(ncol(y),ncol(y),nrow(y)))}
   if(is.array(X)==FALSE & is.list(X)==FALSE)
         stop("X must be an array or a list")
-  if(is.array(X))
+ if(is.array(X))
   {Xs<-list()
+if(ncol(y)>1 | !is.matrix(X)){
      for (i in 1:nrow(y)){
-    Xs[[i]]<- matrix(t(X[,,i]),nrow=ncol(y))};X<-Xs} 
+    Xs[[i]]<- matrix(t(X[,,i]),nrow=ncol(y))}}
+if(ncol(y)==1 & is.matrix(X)){
+     for (i in 1:nrow(y)){
+    Xs[[i]]<- matrix(t(X[i,]),nrow=1)}} 
+X<-Xs}
   if (ncol(y) != nrow(X[[1]]))
         stop("y does not have the same number of columns than X")
   if (nrow(y) != length(X))
@@ -131,7 +137,7 @@ iter=iter+1
  BIC=-2*lognu+log(n)*npar
  P<-matrix(c(as.vector(beta.new),vech(matrix.sqrt(Sigma.new)),as.vector(lambda.new)),ncol=1)
  colnames(P)<-c("estimate") 
- conv.problem=0
+ conv.problem=1
  if(est.var)
  {
  MI.obs<-FI.MSNC(P,y,X)
@@ -139,11 +145,11 @@ iter=iter+1
  se=c()
  if(is.numeric(test) & max(diag(test))<0) 
  {
+ conv.problem=0
  se=sqrt(-diag(test))
  P<-cbind(P,se)
  colnames(P)<-c("estimate","s.e.")
  }
- else conv.problem=1
  }
 conv<-ifelse(iter<=max.iter & dif<=prec, 0, 1)
  aux=as.list(sapply(1:p,seq,by=1,to=p))
@@ -151,8 +157,15 @@ conv<-ifelse(iter<=max.iter & dif<=prec, 0, 1)
  for(j in 1:p)
  {indices=c(indices,paste(j,aux[[j]],sep=""))}
  rownames(P)<-c(paste("beta",1:m,sep=""),paste("alpha",indices,sep=""),paste("lambda",1:p,sep=""))
- ll<-list(estimate=P,logLik=lognu,AIC=AIC,BIC=BIC,iterations=iter,time=tempo, conv=conv)
- if(conv.problem==1) ll$warnings="Standard errors can't be estimated: Numerical problems with the inversion of the information matrix"
+if(conv.problem==0) ll<-list(coefficients=P[,1],se=P[,2],logLik=lognu,AIC=AIC,BIC=BIC,iterations=iter,time=tempo, conv=conv,dist="MSNC",class="MSMSNC",n=nrow(y))
+else{
+ll<-list(coefficients=P[,1],logLik=lognu,AIC=AIC,BIC=BIC,iterations=iter,time=tempo, conv=conv,dist="MSNC",class="MSMSNC",n=nrow(y))
+ ll$warnings="Standard errors can't be estimated: Numerical problems with the inversion of the information matrix"
+}
  object.out<-ll
+ class(object.out) <- "skewMLRM"
+ object.out$y<-y.or
+ object.out$X<-X.or
+ object.out$"function"<-"estimate.MSNC"
 object.out
 }

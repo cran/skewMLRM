@@ -136,12 +136,13 @@ for(i in 1:n) {
      mui<-t(X[,,i])\%*\%betas
      y[i,]<-rMSN(n=1,c(mui),Sigmas,lambda)}
 \donttest{
-P=estimate.MSN(y,X) ##Estimate parameters for MSN model
-P  ## Output of estimate.MSN
-P$estimate[,2] ##Estimated standard errors by the estimate.MSN function 
+fit.MSN=estimate.MSN(y,X) ##Estimate parameters for MSN model
+fit.MSN  ## Output of estimate.MSN
+summary(fit.MSN)
+fit.MSN$se ##Estimated standard errors by the estimate.MSN function 
 ##Estimated standard errors by minus the square root of 
 ##the diagonal from the observed FI matrix of the MSN model 
-sqrt(diag(solve(-FI.MSN(P$estimate[,1], y, X))))}
+sqrt(diag(solve(-FI.MSN(fit.MSN$coefficients, y, X))))}
 }
 % Add one or more standard keywords, see file 'KEYWORDS' in the
 % R documentation directory (show via RShowDoc("KEYWORDS")):

@@ -1,6 +1,59 @@
 choose.models <-
 function(y, X=NULL, max.iter=1000, prec=1e-4, est.var=TRUE, criteria="AIC",cluster=FALSE)
 {
+
+se.est<-function(P,y,X,dist="MN", nu=3, gamma=0.5)
+{
+#mf <- match.call(expand.dots = FALSE)
+#if("nu" %in% names(mf$...)) nu=mf$...$nu
+#if("gamma" %in% names(mf$...)) gamma=mf$...$gamma
+  if (!any(dist == c("MN","MT","MSL","MCN","MSN","MSNC","MSTEC","MSTN","MSTT",
+"MSSLEC","MSSL","MSSL2","MSCN","MSCN2","MSCEC")))
+     stop("distribution is not recognized")
+y<-as.matrix(y)
+if(!is.matrix(y))
+        stop("y must have at least one element")
+  if(is.null(X)){X<-array(c(diag(ncol(y))),c(ncol(y),ncol(y),nrow(y)))}
+  if(is.array(X)==FALSE & is.list(X)==FALSE)
+        stop("X must be an array or a list")
+ if(is.array(X))
+  {Xs<-list()
+if(ncol(y)>1 | !is.matrix(X)){
+     for (i in 1:nrow(y)){
+    Xs[[i]]<- matrix(t(X[,,i]),nrow=ncol(y))}}
+if(ncol(y)==1 & is.matrix(X)){
+     for (i in 1:nrow(y)){
+    Xs[[i]]<- matrix(t(X[i,]),nrow=1)}} 
+X<-Xs}
+  if (ncol(y) != nrow(X[[1]]))
+        stop("y does not have the same number of columns than X")
+  if (nrow(y) != length(X))
+        stop("y does not have the same number of observations than X")
+  FI.dist <- get(paste("FI.", dist, sep = ""), mode = "function")
+if(dist=="MSTT" | dist=="MSSL2" | dist=="MSTEC" | dist=="MSSLEC") {
+#if(!exists("nu")) nu=3 
+if(!is.numeric(nu)) stop("nu must be a number greater than 1") 
+if(as.numeric(nu)<1) stop("nu must be a number greater than 1")}
+if(dist=="MSCN2" | dist=="MSCEC") {
+#if(!exists("nu")) nu=0.1 
+#if(!exists("gamma")) gamma=0.5 
+if(!is.numeric(nu)) stop("nu must be a number between 0 and 1") 
+if((as.numeric(nu)<0 | as.numeric(nu)>1)) stop("nu must be a number between 0 and 1") 
+if(!is.numeric(gamma)) stop("gamma must be a number between 0 and 1")
+if(as.numeric(gamma)<0 | as.numeric(gamma)>1) stop("gamma must be a number between 0 and 1")}
+P<-matrix(P,ncol=1)
+if (!any(dist == c("MSTEC","MSSLEC","MSCEC","MSTT","MSSL2","MSCN2"))) MI.obs<-FI.dist(P=P, y=y, X=X)
+if (dist == "MSTEC" | dist=="MSSLEC" | dist=="MSTT" | dist=="MSSL2") MI.obs<-FI.dist(P=P, y=y, X=X, nu=nu)
+if (dist == "MSCEC" | dist=="MSCN2") MI.obs<-FI.dist(P=P, y=y, X=X, nu=nu, gamma=gamma)
+ test=try(solve(MI.obs,tol=1e-100),silent=TRUE)
+ se=c()
+ if(is.numeric(test) & max(diag(test))<0) 
+ {
+ se=sqrt(-diag(test))
+ }
+ else  stop("Standard errors can't be estimated: Numerical problems with the inversion of the information matrix")
+ se
+}
   if(cluster!=TRUE) cluster=FALSE
   if(all(criteria!=c("AIC","BIC")))
         stop("criteria must be AIC or BIC")
@@ -30,7 +83,7 @@ function(y, X=NULL, max.iter=1000, prec=1e-4, est.var=TRUE, criteria="AIC",clust
    }
   if(grepl("Error",fit.msmn)[1] & grepl("Error",fit.mssmn)[1] & 
      grepl("Error",fit.msmsn)[1] & grepl("Error",fit.msmsnc)[1])
-  {stop("estimation problem in all the models in the SMN class")}
+  {stop("estimation problem in all the models in the MSMN class")}
   index<-c(); maxi=c()
   if(criteria=="AIC")
   {
@@ -53,31 +106,95 @@ fit.msmsn$selected.model, fit.msmsnc$selected.model)[index]
   index<-index[which.min(maxi)]
   fit<-switch(index, "1"=fit.msmn, "2"=fit.mssmn, "3"=fit.msmsn, "4"=fit.msmsnc)
   selected<- sel[index]
+  se<-"Error"
+  if(est.var)
+  {
+  if(fit$dist!="MSTEC" & fit$dist!="MSSLEC" & fit$dist!="MSCEC" & fit$dist!="MSTT" & fit$dist!="MSSL2" & fit$dist!="MSCN2") se<-try(se.est(fit$coefficients,y,fit$X,dist=fit$dist),silent=TRUE)
+  if(fit$dist=="MSTEC" | fit$dist=="MSSLEC" | fit$dist=="MSTT" | fit$dist=="MSSL2") se<-try(se.est(fit$coefficients,y,fit$X,dist=fit$dist,nu=fit$nu),silent=TRUE)
+  if(fit$dist=="MSCEC" | fit$dist=="MSCN2") se<-try(se.est(fit$coefficients,y,fit$X,dist=fit$dist,nu=fit$nu,gamma=fit$gamma),silent=TRUE)
+  } 
+  if(!grepl("Error",se[1])){
+  names(se)<-names(fit$coefficients)
  if (index == 4) {
-     if(selected=="MSNC") RVAL <- list(fitted.models = fitted, selected.model = selected, 
-            estimate = fit$estimate, logLik = fit$logLik, 
-            AIC = fit$AIC, BIC = fit$BIC, iterations = fit$iterations, conv = fit$conv)
-     if(selected=="MSTEC" | selected=="MSSLEC") RVAL <- list(fitted.models = fitted, selected.model = selected, 
-            estimate = fit$estimate, nu = fit$nu, logLik = fit$logLik, 
-            AIC = fit$AIC, BIC = fit$BIC, iterations = fit$iterations, 
-            conv = fit$conv)
-     if(selected=="MSCEC") RVAL <- list(fitted.models = fitted, selected.model = selected, 
-            estimate = fit$estimate, nu = fit$nu, gamma=fit$gamma, logLik = fit$logLik, 
-            AIC = fit$AIC, BIC = fit$BIC, iterations = fit$iterations, conv = fit$conv)
+  if(selected!="MSCEC")
+  {
+   if(selected!="MSNC")   RVAL<- list(coefficients=fit$coefficients, se=se, nu=fit$nu, logLik=fit$logLik,
+AIC=fit$AIC, BIC=fit$BIC, iterations=fit$iterations, conv=fit$conv, fitted.models=fitted, 
+      class="MSMSNC", selected.model=selected)  
+   if(selected=="MSNC")  RVAL<- list(coefficients=fit$coefficients, se=se, logLik=fit$logLik,
+AIC=fit$AIC, BIC=fit$BIC, iterations=fit$iterations, conv=fit$conv, fitted.models=fitted, 
+      class="MSMSNC", selected.model=selected)  
+  }
+  if(selected=="MSCEC")   RVAL<- list(coefficients=fit$coefficients, se=se, nu=fit$nu, gamma=fit$gamma, logLik=fit$logLik,
+AIC=fit$AIC, BIC=fit$BIC, iterations=fit$iterations, conv=fit$conv, fitted.models=fitted, 
+      class="MSMSNC", selected.model=selected)  
+  }
+  if (index == 1 | index==2) {
+        RVAL<- list(coefficients=fit$coefficients, se=se, logLik=fit$logLik,
+AIC=fit$AIC, BIC=fit$BIC, iterations=fit$iterations, conv=fit$conv, fitted.models=fitted, 
+      class="MSMN", selected.model=selected)  
     }
-    else {
-        RVAL <- list(fitted.models = fitted, selected.model = selected, 
-            estimate = fit$estimate, logLik = fit$logLik, AIC = fit$AIC, 
-            BIC = fit$BIC, iterations = fit$iterations, 
-            conv = fit$conv)
+  if (index == 3) {
+ if(selected!="MSCN2")
+  {
+   if(selected!="MSN")   RVAL<- list(coefficients=fit$coefficients, se=se, nu=fit$nu, logLik=fit$logLik,
+AIC=fit$AIC, BIC=fit$BIC, iterations=fit$iterations, conv=fit$conv, fitted.models=fitted, 
+      class="MSMSN", selected.model=selected)  
+   else  RVAL<- list(coefficients=fit$coefficients, se=se, logLik=fit$logLik,
+AIC=fit$AIC, BIC=fit$BIC, iterations=fit$iterations, conv=fit$conv, fitted.models=fitted, 
+      class="MSMSN", selected.model=selected) 
+  }
+  else
+  {
+   RVAL<- list(coefficients=fit$coefficients, se=se, nu=fit$nu, gamma=fit$gamma, logLik=fit$logLik,
+AIC=fit$AIC, BIC=fit$BIC, iterations=fit$iterations, conv=fit$conv, fitted.models=fitted, 
+      class="MSMSN", selected.model=selected)  
+  }
     }
-    if (est.var) {
-        if(!any(selected == c("MSTEC", "MSSLEC", "MSCEC"))) se <- try(se.est(fit$estimate[, 1], y, X, dist = selected), silent = TRUE)
-        if(any(selected==c("MSTEC", "MSSLEC"))) se <- try(se.est(fit$estimate[, 1], y, X, dist = selected, nu=fit$nu), silent = TRUE)
-        if(selected=="MSCEC") se <- try(se.est(fit$estimate[, 1], y, X, dist = selected, nu=fit$nu, gamma=fit$gamma), silent = TRUE)
-        if (grepl("Error", se[1])) 
-            RVAL$warning = "Standard errors can't be estimated: Numerical problems with the inversion of the information matrix"
-        else RVAL$estimate <- cbind(RVAL$estimate, se);colnames(RVAL$estimate) <- c("estimate", "s.e.")
+  }
+  else
+  {
+ if (index == 4) {
+  if(selected!="MSCEC")
+  {
+   if(selected!="MSNC")   RVAL<- list(coefficients=fit$coefficients, nu=fit$nu, logLik=fit$logLik,
+AIC=fit$AIC, BIC=fit$BIC, iterations=fit$iterations, conv=fit$conv, fitted.models=fitted, 
+      class="MSMSNC", selected.model=selected)  
+   if(selected=="MSNC")  RVAL<- list(coefficients=fit$coefficients, logLik=fit$logLik,
+AIC=fit$AIC, BIC=fit$BIC, iterations=fit$iterations, conv=fit$conv, fitted.models=fitted, 
+      class="MSMSNC", selected.model=selected)  
+  }
+  if(selected=="MSCEC")   RVAL<- list(coefficients=fit$coefficients, nu=fit$nu, gamma=fit$gamma, logLik=fit$logLik,
+AIC=fit$AIC, BIC=fit$BIC, iterations=fit$iterations, conv=fit$conv, fitted.models=fitted, 
+      class="MSMSNC", selected.model=selected)  
+  }
+  if (index == 1 | index==2) {
+        RVAL<- list(coefficients=fit$coefficients, logLik=fit$logLik,
+AIC=fit$AIC, BIC=fit$BIC, iterations=fit$iterations, conv=fit$conv, fitted.models=fitted, 
+      class="MSMN", selected.model=selected)  
     }
+  if (index == 3) {
+ if(selected!="MSCN2")
+  {
+   if(selected!="MSN")   RVAL<- list(coefficients=fit$coefficients, nu=fit$nu, logLik=fit$logLik,
+AIC=fit$AIC, BIC=fit$BIC, iterations=fit$iterations, conv=fit$conv, fitted.models=fitted, 
+      class="MSMSN", selected.model=selected)  
+   else  RVAL<- list(coefficients=fit$coefficients, logLik=fit$logLik,
+AIC=fit$AIC, BIC=fit$BIC, iterations=fit$iterations, conv=fit$conv, fitted.models=fitted, 
+      class="MSMSN", selected.model=selected) 
+  }
+  else
+  {
+   RVAL<- list(coefficients=fit$coefficients, nu=fit$nu, gamma=fit$gamma, logLik=fit$logLik,
+AIC=fit$AIC, BIC=fit$BIC, iterations=fit$iterations, conv=fit$conv, fitted.models=fitted, 
+      class="MSMSN", selected.model=selected)  
+  }
+    }
+  } 
+ class(RVAL)<- "skewMLRM"
+ RVAL$y<-y; RVAL$X<-X
+ RVAL$dist<-RVAL$selected.model
+ RVAL$choose.crit<-criteria
+ RVAL$"function"<-"choose.models"
  RVAL
 }

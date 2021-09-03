@@ -1,37 +1,21 @@
-\name{se.est}
-\alias{se.est}
-%- Also NEED an '\alias' for EACH other topic documented here.
+\name{plot.skewMLRM}
+\alias{plot.skewMLRM}
 \title{
-Estimated standard errors for the estimated parameters in distributions belonging to the MSMN, MSMSN, MSSMN and MSMSNC classes.
+Plot an object of the "skewMLRM" class produced with the function distMahal.
 }
 \description{
-se.est computes the estimated standard errors based on the hessian matrix for supported
-models in the multivariate scale mixtures of normal (MSMN),
-multivariate scale mixtures of skew-normal (MSMSN), multivariate skew scale mixtures of normal (MSSMN) and
-multivariate scale mixtures of skew-normal-Cauchy (MSMSNC) classes. See details for supported distributions.
+Plot the Mahalanobis distance for a object of the class "skewMLRM" produced by
+the function distMahal.
 }
 \usage{
-se.est(P, y, X, dist = "MN", nu = 0.5, gamma = 0.5)
+\method{plot}{skewMLRM}(x, ...)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
-  \item{P}{
-the estimated parameters returned by a function of the form estimate.xxx, where xxx is a supported distribution.
+  \item{x}{
+an object of the class "skewMLRM" produced by the function distMahal.
 }
-  \item{y}{
-The multivariate vector of responses. The univariate case also is supported.
-}
-  \item{X}{
-The regressor matrix.
-}
-  \item{dist}{
-a supported multivariate distribution. See details.
-}
-\item{nu}{
-nu parameter. Only for MSTT, MSSL2, MSCN2, MSTEC, MSSLEC and MSCEC distributions.
-}
-\item{gamma}{
-gamma parameter. Only for MSCN2 and MSCEC distributions.
+\item{...}{for graphical extra arguments
 }
 }
 \details{
@@ -52,9 +36,21 @@ skew-t-Expected-Cauchy (MSTEC),  multivariate skew-slash-Expected-Cauchy
 skew-contaminated-Expected-Cauchy (MSCEC). See Kahrari et al. (2020) for details.
 
 Note: the MSN distribution belongs to both, MSMSN and MSSMN classes.
+
+
+
+The functions which generate an object of the class "skewMLRM" are
+
+estimate.xxx: where xxx can be MN, MT, MSL, MCN, MSN, MSTN, MSSL, MSCN, MSTT, MSSL2, MSCN2, MSNC, MSTEC,
+MSSLEC or MSCEC.
+
+choose.yyy: where yyy can be MSMN, MSSMN, MSMSN, MSMSNC or models.
+
+chose2, mbackcrit and mbacksign.
+
 }
 \value{
-A vector with the estimated standard errors.
+A complete summary for the coefficients extracted from a skewMLRM object. 
 }
 \references{
 Kahrari, F., Arellano-Valle, R.B., Ferreira, C.S., Gallardo, D.I. (2020) Some Simulation/computation
@@ -72,12 +68,11 @@ Zeller, C.B., Lachos, V.H., Vilca-Labra, F.E. (2011). Local influence analysis f
 with scale mixtures of skew-normal distributions. Journal of Applied Statistics 38, 343-368.
 }
 \author{
-Clecio Ferreira, Diego Gallardo and Camila Zeller.
+Clecio Ferreira, Diego Gallardo and Camila Zeller 
 }
-\note{
-For MSTEC and MSSLEC and distributions, nu is considered as fixed. For MSCEC distribution, nu and gamma are
-considered as fixed. This function is mainly for internal use.
-}
+%\note{
+%%  ~~further notes~~
+%}
 
 %% ~Make other sections like Warning with \section{Warning }{....} ~
 
@@ -98,12 +93,16 @@ X<-array(0,dim=c(2*p,m,n))
 for(i in 1:n) {
     X[1:p,1,i]=X.aux[i,,drop=FALSE]
     X[p+1:p,2,i]=X.aux[i,,drop=FALSE]
-} 
-##See the simulated regressor matrix X
+}
+##See the covariate matrix X
 ##X
-aux<-estimate.MN(y,X) ##Estimate the parameters for the MN regression model
-aux$estimate[,2] ##Estimated standard errors (se) by the estimate.MN function 
-se.est(aux$estimate[,1], y, X, dist="MN") ##Estimated se for the MN model 
+fit.MN=estimate.MN(y, X)   #Fit the MN distribution 
+res.MN=distMahal(fit.MN)   #Compute the Mahalanobis distances
+plot(res.MN)               #Plot the Mahalanobis distances 
+#
+fit.MSN=estimate.MSN(y, X)  #Fit the MSN distribution 
+res.MSN=distMahal(fit.MSN)  #Compute the Mahalanobis distances
+plot(res.MSN)               #Plot the Mahalanobis distances 
 }
 % Add one or more standard keywords, see file 'KEYWORDS' in the
 % R documentation directory (show via RShowDoc("KEYWORDS")):

@@ -13,7 +13,7 @@ See details for avaliable distributions.
 }
 \usage{
 mbackcrit(y, X = NULL, max.iter = 1000, prec = 1e-04, dist = "MN", 
-	criteria = "AIC", cluster = FALSE)
+	criteria = "AIC", est.var=TRUE, cluster = FALSE, ...)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
@@ -21,7 +21,7 @@ mbackcrit(y, X = NULL, max.iter = 1000, prec = 1e-04, dist = "MN",
 The multivariate vector of responses. The univariate case also is supported.
 }
   \item{X}{
-The regressor matrix.
+The regressor matrix. It should include intercept term for all the variates.
 }
   \item{max.iter}{
 The maximum number of iterations.
@@ -35,8 +35,16 @@ the multivariate distribution in which the covariates selection will be implemen
   \item{criteria}{
 criteria used to perform the covariates selection. AIC (default) and BIC avaliable.
 }
+  \item{est.var}{
+Logical. If TRUE the standard errors are estimated.
+}
   \item{cluster}{
 logical. If TRUE, parallel computing is used. FALSE is the default value.
+}
+\item{...}{
+Possible aditional arguments. For instance, for MSTT, MSSL2, MSTEC and MSSLEC 
+distributions should be added nu.min and nu.fixed related to specifications
+for the nu parameter. 
 }
 }
 \details{
@@ -59,15 +67,25 @@ skew-contaminated-Expected-Cauchy (MSCEC). See Kahrari et al. (2020) for details
 Note: the MSN distribution belongs to both, MSMSN and MSSMN classes.
 }
 \value{
-A list with the following components:
-%%  If it is a LIST, use
-\item{comment}{A comment indicating how many coefficients were eliminated.}
-\item{estimate}{A matrix with the estimates and standard errors for the final model.}
-\item{logLik}{The log-likelihood function evaluated in the estimated parameters}
-\item{AIC}{Akaike's Information Criterion}
-\item{BIC}{Bayesian's Information Criterion}
-\item{conv}{An integer code. 0 indicates successful completion. 1 otherwise.}
-\item{eliminated}{An string vector with the eliminated betas (in order of elimination).}
+an object of class "skewMLRM" is returned. The object returned for this functions is a list containing the following
+components:
+
+\item{coefficients}{A named vector of coefficients}
+\item{se}{A named vector of the standard errors for the estimated coefficients. Valid if est.var is TRUE and 
+the hessian matrix is invertible.}
+\item{logLik}{The log-likelihood function evaluated in the estimated parameters for the selected model}
+\item{AIC}{Akaike's Information Criterion for the selected model}
+\item{BIC}{Bayesian's Information Criterion for the selected model}
+\item{iterations}{the number of iterations until convergence (if attached)}
+\item{conv}{An integer code for the selected model. 0 indicates successful completion. 1 otherwise.}
+\item{dist}{The distribution for which was performed the estimation.}
+\item{class}{The class for which was performed the estimation.}
+\item{choose.crit}{the specified criteria to choose the distribution.}
+\item{comment}{A comment indicating how many coefficients were eliminated}
+\item{y}{The multivariate vector of responses. The univariate case also is supported.}
+\item{X}{The regressor matrix (in a list form).}
+\item{function}{a string with the name of the used function.}
+
 %% ...
 }
 \references{
@@ -119,11 +137,15 @@ for(i in 1:n) {
 ##Perform covariates selection in the MN distribution
 ##based on the AIC criteria
 ##may take some time on some systems
-mbackcrit(y, X, dist="MN")
+fit.MN=mbackcrit(y, X, dist="MN")
+summary(fit.MN)
 ##Identical process for MT distribution
-mbackcrit(y, X, dist="MT")
+fit.MT=mbackcrit(y, X, dist="MT")
+summary(fit.MT)
 ##and for MSN distribution
-mbackcrit(y, X, dist="MSN")}
+fit.MSN=mbackcrit(y, X, dist="MSN")
+summary(fit.MSN)
+}
 }
 % Add one or more standard keywords, see file 'KEYWORDS' in the
 % R documentation directory (show via RShowDoc("KEYWORDS")):

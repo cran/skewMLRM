@@ -1,6 +1,5 @@
-\name{plotMahal}
-\alias{plotMahal}
-%- Also NEED an '\alias' for EACH other topic documented here.
+\name{distMahal}
+\alias{distMahal}
 \title{Mahalanobis distance for fitted models in the MSMN, MSMSN, MSSMN and MSMSNC classes
 }
 \description{
@@ -9,16 +8,13 @@ multivariate scale mixtures of skew-normal (MSMSN), multivariate skew scale mixt
 multivariate scale mixtures of skew-normal-Cauchy (MSMSNC) classes. See details for supported distributions.
 }
 \usage{
-plotMahal(fit, y, X, dist = "MN", alpha = 0.95, ...)
+distMahal(object, alpha = 0.95, ...)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
-  \item{fit}{an object returned by the function estimate.xxx, where xxx is any supported model. See details for supported distributions.}
-  \item{y}{The multivariate vector of responses. The univariate case also is supported.}
-  \item{X}{the regressor matrix.}
-  \item{dist}{the distribution used to obtain the fit object. See details for supported distributions.}
+  \item{object}{an object of class "skewMLRM" returned by one of the following functions: estimate.xxx, choose.yyy, choose2, mbackcrit or mbacksign. See details for supported distributions.}
   \item{alpha}{significance level (0.05 by default).}
-  \item{...}{... can include any of the other arguments of plots}
+  \item{...}{aditional graphical parameters}
 }
 \details{
 Supported models are: 
@@ -40,8 +36,23 @@ skew-contaminated-Expected-Cauchy (MSCEC). See Kahrari et al. (2020) for details
 Note: the MSN distribution belongs to both, MSMSN and MSSMN classes.
 }
 \value{
-A plot with the Mahalanobis distance for all the observations and a cut-off to detect possible influent observations
-based on the specified significance (0.05 by default). 
+distMahal provides an object of class skewMLRM related to compute 
+the Mahalanobis distance for all the observations and a cut-off to 
+detect possible influent observations based on the specified 
+significance (0.05 by default). 
+
+an object of class "skewMLRM" is returned. The object returned for this functions is a list containing the following
+components:
+
+\item{Mahal}{the Mahalanobis distance for all the observations}
+\item{function}{a string with the name of the used function.}
+\item{dist}{The distribution for which was performed the estimation.}
+\item{class}{The class for which was performed the estimation.}
+\item{alpha}{specified level of significance (0.05 by default).}
+\item{cut}{the cut-off to detect possible influent observations based on the specified 
+significance.}
+\item{y}{The multivariate vector of responses. The univariate case also is supported.}
+\item{X}{The regressor matrix (in a list form).}
 }
 \references{
 Kahrari, F., Arellano-Valle, R.B., Ferreira, C.S., Gallardo, D.I. (2020) Some Simulation/computation
@@ -92,8 +103,8 @@ for(i in 1:n) {
      mui<-t(X[,,i])\%*\%betas
      y[i,]<-rMN(n=1,c(mui),Sigmas) ## simulating the response vector 
 }
-theta.MN=estimate.MN(y,X) #fit the MN model
-plotMahal(theta.MN, y, X) #Plot the Mahalanobis distance for MN model
-theta.MT=estimate.MT(y,X) #fit the MT model
-plotMahal(theta.MT, y, X) #Plot the Mahalanobis distance for MT model
+fit.MN=estimate.MN(y,X)        #fit the MN model
+mahal.MN=distMahal(fit.MN)     #compute the Mahalanobis distances for MN model
+plot(mahal.MN)                 #plot the Mahalanobis distances for MN model
+mahal.MN$Mahal                #presents the Malahanobis distances
 }

@@ -14,6 +14,8 @@ lmnr<-function(theta,y,X){
     mui=as.vector(X[[i]]%*%beta0)
     l=l+log(mvtnorm::dmvnorm(as.vector(y[i,]),mui,Sigma))}
   return(l)}
+X.or<-X
+y.or<-y
 y<-as.matrix(y)
 if(!is.matrix(y))
         stop("y must have at least one element")
@@ -83,7 +85,7 @@ X<-Xs}
  })
   P=matrix(P,ncol=1)
   npar=length(P)
-conv.problem=0
+conv.problem=1
  if(est.var)
  {
  MI.obs<-  FI.MN(P,y,X)
@@ -91,11 +93,11 @@ conv.problem=0
  se=c()
  if(is.numeric(test) & max(diag(test))<0) 
  {
+ conv.problem=0
  se=sqrt(-diag(test))
  P<-cbind(P,se)
  colnames(P)<-c("estimate","s.e.")
  }
- else conv.problem=1
  }
 conv<-ifelse(iter<=max.iter & crit<=prec, 0, 1)
    tempo=as.numeric(aa[3])
@@ -108,8 +110,14 @@ conv<-ifelse(iter<=max.iter & crit<=prec, 0, 1)
  for(j in 1:m)
  {indices=c(indices,paste(j,aux[[j]],sep=""))}
  rownames(P)<-c(paste("beta",1:p,sep=""),paste("alpha",indices,sep=""))
-  ll<-list(estimate=P,logLik=logvero,AIC=AIC,BIC=BIC,iterations=iter,time=tempo,conv=conv)
-  if(conv.problem==1) ll$warnings="Standard errors can't be estimated: Numerical problems with the inversion of the information matrix"
+if(conv.problem==0)  ll<-list(coefficients=P[,1],se=P[,2],logLik=logvero,AIC=AIC,BIC=BIC,iterations=iter,time=tempo,conv=conv,dist="MN",class="MSMN",n=nrow(y))
+else{
+ll<-list(coefficients=P[,1],logLik=logvero,AIC=AIC,BIC=BIC,iterations=iter,time=tempo,conv=conv,dist="MN",class="MSMN",n=nrow(y));
+ll$warnings="Standard errors can't be estimated: Numerical problems with the inversion of the information matrix"}
  object.out<-ll
+ class(object.out) <- "skewMLRM"
+ object.out$y<-y.or
+ object.out$X<-X.or
+ object.out$"function"<-"estimate.MN"
  object.out
 }

@@ -1,7 +1,13 @@
 estimate.MSSLEC <-
-function(y,X=NULL,max.iter=1000,prec=1e-4,est.var=TRUE)
+function(y,X=NULL,max.iter=1000,prec=1e-4,est.var=TRUE,nu.fixed=3,nu.min=2.0001)
 {
-y<-as.matrix(y)
+  y.or<-y; X.or<-X
+  y<-as.matrix(y)
+if(!is.numeric(nu.min) | nu.min<=0) stop("nu.min should be a positive number")
+if(nu.fixed!=FALSE & !is.numeric(nu.fixed))
+   stop("nu fixed must be a number greater than 1")
+if(is.numeric(nu.fixed) & as.numeric(nu.fixed)<1)
+   stop("nu fixed must be a number greater than 1")
 if(!is.matrix(y))
         stop("y must have at least one element")
   if(is.null(X)){X<-array(c(diag(ncol(y))),c(ncol(y),ncol(y),nrow(y)))}
@@ -83,7 +89,6 @@ return(log.int)}
 max.int<-1
 integrate(aux.c1.MSMSNC,lower=0,upper=max.int,a,d,p,dist=dist,nu=nu,abs.tol=1e-12)$value
 }
-
 compute.den.MSMSNC<-function(a,d,p,dist="SSLEC",nu=1)
 {
  aux.den.MSMSNC<-function(x,a,d,p,dist="SSLEC",nu=1){  
@@ -151,12 +156,13 @@ solve(sum1,tol=1e-100)%*%sum2
 n=nrow(y)
   p=ncol(y)
   m=ncol(X[[1]])
+if(!nu.fixed){
 aa=system.time({
 beta.last<-matrix(beta0,ncol=1)
 Sigma.last<-Sigma0
 eta.last<-matrix(eta0,ncol=1)
 nu.last<-nu0
-  lower1<-1.0001
+  lower1<-nu.min
 i=0;dif=10
 while(i<=max.iter & dif>prec)
 {  aux<-E.step.MSMSNC.par(y,X,c(beta.last),Sigma.last,c(eta.last),dist,nu=nu.last)
@@ -173,7 +179,31 @@ eta.last=eta.new;beta.last=beta.new
 Sigma.last=Sigma.new;nu.last=nu.new
 i=i+1
 }
- })
+ })}
+if(is.numeric(nu.fixed)){
+aa=system.time({
+beta.last<-matrix(beta0,ncol=1)
+Sigma.last<-Sigma0
+eta.last<-matrix(eta0,ncol=1)
+nu.last<-nu.fixed
+  lower1<-1.0001
+i=0;dif=10
+while(i<=max.iter & dif>prec)
+{  aux<-E.step.MSMSNC.par(y,X,c(beta.last),Sigma.last,c(eta.last),dist,nu=nu.last)
+   a.theta<-aux$a.theta
+b.theta<-aux$b.theta
+c.theta<-aux$c.theta
+    beta.new<-M1.step.MSMSNC(y,X,Sigma.last,c(eta.last),a.theta,b.theta,c.theta)
+   Sigma.new<-M2.step.MSMSNC(y,X,beta.new,a.theta)
+eta.new<-M3.step.MSMSNC(y,X,beta.new,b.theta,c.theta)
+    lambda.new<-matrix.sqrt(Sigma.new)%*%eta.new
+dif=abs(lsmsnc.prof(nu.last,y,X,beta.new,Sigma.new,eta.new,dist)-lsmsnc.prof(nu.last,y,X,beta.last,Sigma.last,eta.last,dist))
+eta.last=eta.new;beta.last=beta.new
+Sigma.last=Sigma.new
+i=i+1
+}
+nu.new=nu.last
+ })}
 conv<-ifelse(i<=max.iter & dif<=prec, 0, 1)
  tempo=as.numeric(aa[3])
  lognu=-lsmsnc.prof(nu.new,y,X,beta.new,Sigma.new,eta.new,dist)
@@ -188,23 +218,29 @@ conv<-ifelse(i<=max.iter & dif<=prec, 0, 1)
  {indices=c(indices,paste(j,aux[[j]],sep=""))}
  P<-matrix(P,ncol=1)
  colnames(P)<-c("estimate") 
- conv.problem=0
- se=c()
+ conv.problem=1
  if(est.var)
  {
  MI.obs<-FI.MSSLEC(P,y,X,nu.new)
  test=try(solve(MI.obs,tol=1e-100),silent=TRUE)
  if(is.numeric(test) & max(diag(test))<0) 
  {
+ conv.problem=0
  se=sqrt(-diag(test))
  }
- else conv.problem=1
  }
  nu<-nu.new
  if(est.var){P<-cbind(P,se);colnames(P)<-c("estimate","s.e.")}
 rownames(P)<-c(paste("beta",1:m,sep=""),paste("alpha",indices,sep=""),paste("lambda",1:p,sep=""))
- ll<-list(estimate=P,nu=nu,logLik=lognu,AIC=AIC,BIC=BIC,iterations=i,time=tempo,conv=conv)
- if(conv.problem==1) ll$warnings="Standard errors can't be estimated: Numerical problems with the inversion of the information matrix"
+ if(conv.problem==0)  ll<-list(coefficients=P[,1],se=P[,2],nu=nu,logLik=lognu,AIC=AIC,BIC=BIC,iterations=i,time=tempo,conv=conv,dist="MSSLEC",class="MSMSNC",n=nrow(y))
+ else{
+ ll<-list(coefficients=P[,1],nu=nu,logLik=lognu,AIC=AIC,BIC=BIC,iterations=i,time=tempo,conv=conv,dist="MSSLEC",class="MSMSNC",n=nrow(y))
+ ll$warnings="Standard errors can't be estimated: Numerical problems with the inversion of the information matrix"
+ }
+ class(ll) <- "skewMLRM"
+ ll$y<-y.or
+ ll$X<-X.or
+ ll$"function"<-"estimate.MSSLEC"
  ll
 }
   n=nrow(y)

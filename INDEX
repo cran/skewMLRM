@@ -6,6 +6,8 @@ choose2           Select a distribution in the MSMN, MSSMN, MSMSN
                   selection.
 chooseM           Choose a distribution in the MSMN, MSMSN, MSSMN
                   and MSMSNC classes.
+distMahal         Mahalanobis distance for fitted models in the
+                  MSMN, MSMSN, MSSMN and MSMSNC classes.
 dtgamma           Truncated gamma distribution.
 estimateM         Fitting a model in the MSMN, MSMSN, MSSMN and
                   MSMSNC classes.
@@ -13,12 +15,11 @@ matrix.sqrt       Square root of a matrix.
 mbackcrit         Multivariate backward based on the AIC or BIC
                   criteria.
 mbacksign         Multivariate Backward Based on Significance.
-plotMahal         Mahalanobis distance for fitted models in the
-                  MSMN, MSMSN, MSSMN and MSMSNC classes.
+plotskewMLRM      Plot the Mahalanobis distances for an object  
+                  produced by the function distMahal
 rM                Random generation for models in the MSMN,
                   MSMSN, MSSMN and MSMSNC classes.
-se.est            Estimated standard errors for the estimated
-                  parameters in distributions belonging to the
-                  MSMN, MSMSN, MSSMN and MSMSNC classes.
+summaryskewMLRM   Extract Model Coefficients in a skewMLRM 
+                  fitted model
 vech              Vectorize a symmetric matrix.
 xpnd              Reconstitute a symmetric matrix from a vector. 

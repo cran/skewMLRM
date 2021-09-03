@@ -9,6 +9,7 @@ function(n, mu,Sigma, nu=1){
     if(is.vector(Sigma)) Sigma=matrix(Sigma)
   if(round(n)!=n | n<=0)
     stop("sample size must be a positive integer")      
+
   if(!is.matrix(mu)) mu<-matrix(mu, ncol=length(mu),nrow=1)
   if (!isSymmetric(Sigma))
         stop("Sigma is not symmetric")
