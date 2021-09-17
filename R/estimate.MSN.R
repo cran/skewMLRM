@@ -9,7 +9,7 @@ lmsnr<-function(P,y,X){
   q=ncol(X[[n]])
   b=as.matrix(P[1:q])
   B=xpnd(P[(q+1):(q+p*(p+1)/2)])
-  invB=solve(B)
+  invB=solve2(B)
   h=as.matrix(P[(q+p*(p+1)/2+1):length(P)])
   e<-matrix(0,n,p)
   for(i in 1:n){e[i,]<-y[i,]-X[[i]]%*%b}
@@ -24,7 +24,7 @@ escmsnr<-function(P,y,X){
   b=as.matrix(P[1:q])
   p0=p*(p+1)/2
   B=xpnd(P[(q+1):(q+p0)])
-  invB=solve(B)
+  invB=solve2(B)
   h=as.matrix(P[(q+p*(p+1)/2+1):length(P)])
   d<-matrix(0,n,1)
   e<-matrix(0,n,p)
@@ -87,15 +87,15 @@ X<-Xs}
     b0<-b0+t(X[[i]])%*%X[[i]]
     b1<-b1+t(X[[i]])%*%y[i,] 
   }
-  b<-solve(b0)%*%b1
+  b<-solve2(b0)%*%b1
   e<-matrix(0,n,p)
   for(i in 1:n){
     e[i,]<-y[i,]-X[[i]]%*%b
   }
   S<-cov(e)
-  invS<-solve(S)
+  invS<-solve2(S)
   B<-matrix.sqrt(S)
-  invB<-solve(B)
+  invB<-solve2(B)
   h<-as.matrix(moments::skewness(e))
   P_0<-c(as.vector(b),vech(B),as.vector(h))
   log0=lmsnr(P_0,y,X)
@@ -109,17 +109,17 @@ X<-Xs}
     W<-as.matrix(dnorm(aux)/pnorm(aux))
     t<-e%*%invB%*%h+W #passo E
     S<-1/n*(t(e)%*%diag(as.vector(u),n)%*%e)
-    invS<-solve(S)
+    invS<-solve2(S)
     B<-matrix.sqrt(S)
-    invB<-solve(B)
-    h<-B%*%solve(t(e)%*%e)%*%t(e)%*%t
+    invB<-solve2(B)
+    h<-B%*%solve2(t(e)%*%e)%*%t(e)%*%t
     b0<-matrix(0,q,q)
     b1<-matrix(0,q,1)
     for(i in 1:n){
       b0<-b0+t(X[[i]])%*%invB%*%(as.numeric(u[i])*diag(p)+h%*%t(h))%*%invB%*%X[[i]]
       b1<-b1+t(X[[i]])%*%(as.numeric(u[i])*(invB%*%invB)%*%y[i,]-as.numeric(t[i])*invB%*%h+invB%*%h%*%t(h)%*%invB%*%y[i,])
     }
-    C<-solve(b0)
+    C<-solve2(b0)
     b<-C%*%b1
     e<-matrix(0,n,p)
     for(i in 1:n){
@@ -140,7 +140,7 @@ X<-Xs}
  conv.problem=1
  if(est.var){
  MI.obs<-FI.MSN(P,y,X)
- test=try(solve(MI.obs,tol=1e-100),silent=TRUE)
+ test=try(solve2(MI.obs),silent=TRUE)
  se=c()
  if(is.numeric(test) & max(diag(test))<0){
  conv.problem=0

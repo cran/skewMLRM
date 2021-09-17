@@ -20,7 +20,7 @@ fauxss<-function(u,v,p,d,r,s){u^(v+p/2-r)*exp(-u*d/2)*log(u)^s}
   p0=p*(p+1)/2
   b=as.matrix(P[1:q])
   B=xpnd(P[(q+1):(q+p0)])
-  invB=solve(B)
+  invB=solve2(B)
   h=as.matrix(P[(q+p0+1):(length(P)-1)])
   v=as.numeric(P[length(P)])
   d<-matrix(0,n,1)

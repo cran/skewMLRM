@@ -96,11 +96,13 @@ for(i in 1:n) {
 }
 ##See the covariate matrix X
 ##X
+\donttest{
 fit.MN=estimate.MN(y, X)     #fit the MN distribution
 summary(fit.MN)              #summary for the fit
 #
 fit.MSN=estimate.MSN(y, X)   #fit the MSN distribution
 summary(fit.MSN)             #summary for the fit
+}
 }
 % Add one or more standard keywords, see file 'KEYWORDS' in the
 % R documentation directory (show via RShowDoc("KEYWORDS")):

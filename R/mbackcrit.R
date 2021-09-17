@@ -46,7 +46,7 @@ P<-matrix(P,ncol=1)
 if (!any(dist == c("MSTEC","MSSLEC","MSCEC","MSTT","MSSL2","MSCN2"))) MI.obs<-FI.dist(P=P, y=y, X=X)
 if (dist == "MSTEC" | dist=="MSSLEC" | dist=="MSTT" | dist=="MSSL2") MI.obs<-FI.dist(P=P, y=y, X=X, nu=nu)
 if (dist == "MSCEC" | dist=="MSCN2") MI.obs<-FI.dist(P=P, y=y, X=X, nu=nu, gamma=gamma)
- test=try(solve(MI.obs,tol=1e-100),silent=TRUE)
+ test=try(solve2(MI.obs),silent=TRUE)
  se=c()
  if(is.numeric(test) & max(diag(test))<0) 
  {

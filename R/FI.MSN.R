@@ -26,7 +26,7 @@ X<-Xs}
   p0=p*(p+1)/2
   b=as.matrix(P[1:q])
   B=xpnd(P[(q+1):(q+p0)])
-  invB=solve(B)
+  invB=solve2(B)
   h=as.matrix(P[(q+p*(p+1)/2+1):length(P)])
   d<-matrix(0,n,1)
   e<-matrix(0,n,p)

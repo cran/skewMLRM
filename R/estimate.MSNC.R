@@ -21,7 +21,7 @@ X<-Xs}
   if (nrow(y) != length(X))
         stop("y does not have the observations than X")  
 n=nrow(y)
-  eta=solve(matrix.sqrt(Sigma))%*%lambda
+  eta=solve2(matrix.sqrt(Sigma))%*%lambda
   logv=0
   for (i in 1:n){
       mui<-X[[i]]%*%beta0
@@ -37,13 +37,13 @@ p=ncol(X[[1]]);m=nrow(X[[1]])
 eta<-matrix(eta,ncol=1)
 sum1<-matrix(0,ncol=p,nrow=p)
 sum2<-matrix(0,nrow=p,ncol=1)
-  invSigma=solve(Sigma)
+  invSigma=solve2(Sigma)
 for(i in 1:nrow(y))
 {
 sum1<-sum1+t(X[[i]])%*%(a.theta[i]*invSigma+b.theta[i]*eta%*%t(eta))%*%X[[i]]
 sum2<-sum2+t(X[[i]])%*%(b.theta[i]*eta%*%t(eta)%*%y[i,]+a.theta[i]*invSigma%*%y[i,] - c.theta[i]*eta)   
 }
-  solve(sum1,tol=1e-100)%*%sum2
+  solve2(sum1)%*%sum2
 }
 M2.step.MSMSNC<-function(y,X,beta,a.theta)
 {
@@ -66,7 +66,7 @@ for(i in 1:n)
 sum1<-sum1+b.theta[i]*(y[i,]-X[[i]]%*%beta)%*%t(y[i,]-X[[i]]%*%beta)
 sum2<-sum2+c.theta[i]*(y[i,]-X[[i]]%*%beta)
 }
-solve(sum1,tol=1e-100)%*%sum2
+solve2(sum1)%*%sum2
 }
 y<-as.matrix(y)
 if(!is.matrix(y))
@@ -97,13 +97,13 @@ aa=system.time({
     b0<-b0+t(X[[i]])%*%X[[i]]
     b1<-b1+t(X[[i]])%*%y[i,]
   }
-  beta.last<-solve(b0)%*%b1
+  beta.last<-solve2(b0)%*%b1
   e<-matrix(0,n,p)
   for(i in 1:n){
     e[i,]<-y[i,]-X[[i]]%*%beta.last
   }
   Sigma.last<-cov(e)
-  Sm.inv<-solve(matrix.sqrt(Sigma.last))
+  Sm.inv<-solve2(matrix.sqrt(Sigma.last))
   lambda.last<-as.matrix(moments::skewness(e))
   eta.last=Sm.inv%*%lambda.last
   
@@ -141,7 +141,7 @@ iter=iter+1
  if(est.var)
  {
  MI.obs<-FI.MSNC(P,y,X)
- test=try(solve(MI.obs,tol=1e-100),silent=TRUE)
+ test=try(solve2(MI.obs),silent=TRUE)
  se=c()
  if(is.numeric(test) & max(diag(test))<0) 
  {

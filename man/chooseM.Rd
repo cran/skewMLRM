@@ -135,9 +135,9 @@ for(i in 1:n) {
 ##See the covariate matrix X
 ##X
 ##Select a distribution within the MSMN class.
+\donttest{
 fit.MSMN=choose.MSMN(y,X)
 summary(fit.MSMN)
-\donttest{
 ##Identical process within the MSSMN class.
 ##may take some time on some systems
 fit.MSSMN=choose.MSSMN(y,X)

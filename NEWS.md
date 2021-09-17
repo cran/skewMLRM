@@ -1,3 +1,7 @@
+### 1.2
+* added function solve2
+* all matrix inversions are performed with solve2
+
 ### 1.1
 
 * option to maintain fixed nu in the following functions: estimate.MSTT, estimate.MSSL2, 

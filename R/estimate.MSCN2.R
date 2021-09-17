@@ -18,14 +18,14 @@ mscn.logL <- function(theta,Y,X){
  p1=p*(p+1)/2
  B= xpnd(theta[(q0+1):(q0+p1)]) # Sigma^{1/2}
  Sigma=B%*%B
- invSigma=solve(Sigma)
+ invSigma=solve2(Sigma)
  Binv=matrix.sqrt(invSigma) # Sigma^{-1/2} = B^{-1}
  lambda=as.matrix(theta[(q0+p1+1):pth],p,1)
  nu=as.numeric(theta[pth+1])
  gama=as.numeric(theta[pth+2])
  res<-matrix(0,n,p)
  for(i in 1:n){res[i,]<-Y[i,]-X[[i]]%*%beta0}
-A=as.vector(t(lambda)%*%solve(B)%*%t(res))
+A=as.vector(t(lambda)%*%solve2(B)%*%t(res))
 fy=2*nu*mvtnorm::dmvnorm(res, sigma = Sigma/gama)*pnorm(sqrt(gama)*A)+2*(1-nu)*mvtnorm::dmvnorm(res, sigma = Sigma)*pnorm(A)
 return(sum(log(fy)))}
 y<-as.matrix(y)
@@ -66,25 +66,25 @@ if(!nu.fixed & !gamma.fixed){
   for(i in 1:n){
     b0<-b0+t(X[[i]])%*%X[[i]]
     b1<-b1+t(X[[i]])%*%y[i,] }
-  beta0<-solve(b0)%*%b1
+  beta0<-solve2(b0)%*%b1
   res<-matrix(0,n,p)
   for(i in 1:n){res[i,]<-y[i,]-X[[i]]%*%beta0}
   S<-cov(res)
-  invS<-solve(S)
+  invS<-solve2(S)
   B<-matrix.sqrt(S)
   lambda<-as.matrix(moments::skewness(res))
   nugama=c(0.5,0.5)
   theta0<-c(as.vector(beta0),vech(B),as.vector(lambda),nugama)
   log0= mscn.logL(theta0,y,X)
   Sigma=B%*%B
-  invSigma=solve(Sigma)
+  invSigma=solve2(Sigma)
   delta=lambda/sqrt(1+sum(as.vector(lambda)^2))
-  Delta= matrix.sqrt(solve(Sigma))%*%delta
+  Delta= matrix.sqrt(solve2(Sigma))%*%delta
   a1=Sigma-Delta%*%t(Delta)
   bb=eigen(a1)$values
   { if (sum(bb>0)==p) Gama=a1
   else Gama=Sigma}
-  A=as.vector(t(lambda)%*%solve(B)%*%t(res))
+  A=as.vector(t(lambda)%*%solve2(B)%*%t(res))
   L1<-rbind(1e-3,1e-3)
   L2<-rbind(0.999,0.999)
   criterio=1
@@ -95,14 +95,14 @@ if(!nu.fixed & !gamma.fixed){
   res<-matrix(0,n,p)  
   while((criterio>=prec)&&(cont<=max.iter)&&(bb>=0)){
     cont=cont+1
-    Binv=solve(B)    
+    Binv=solve2(B)    
     for (i in 1:n){
           mu[i,]<-X[[i]]%*%beta0
           res[i,]<-y[i,]-X[[i]]%*%beta0
           d[i]<-as.numeric(t(res[i,])%*%Binv%*%Binv%*%res[i,])
     }
     ### Inicio passo E
-    Gamainv=solve(Gama)  
+    Gamainv=solve2(Gama)  
     nu=nugama[1]
     gama=nugama[2] 
     fy=2*nu*mvtnorm::dmvnorm(res, sigma = Sigma/gama)*pnorm(sqrt(gama)*A)+2*(1-nu)*mvtnorm::dmvnorm(res, sigma = Sigma)*pnorm(A) 
@@ -128,16 +128,16 @@ if(!nu.fixed & !gamma.fixed){
         Delta1=Delta1+ut[i]*resi
         Gama0=Gama0+u[i]*resi%*%t(resi)-ut[i]*(Delta%*%t(resi)+resi%*%t(Delta))+ut2[i]*Delta%*%t(Delta)
     }
-    beta0=solve(beta01)%*%beta02
+    beta0=solve2(beta01)%*%beta02
     Delta=Delta1/sum(ut2)
     Gama=Gama0/n
     Sigma=Gama+Delta%*%t(Delta)
-    invSigma=solve(Sigma)
+    invSigma=solve2(Sigma)
     B=matrix.sqrt(Sigma)
-    Binv=solve(B)
+    Binv=solve2(B)
     delta=Binv%*%Delta
     lambda=delta/sqrt(1-as.numeric(t(Delta)%*%invSigma%*%Delta))
-    A=as.vector(t(lambda)%*%solve(B)%*%t(res))    
+    A=as.vector(t(lambda)%*%solve2(B)%*%t(res))    
     #nugama<-optim(nugama,logscnnu,gr = NULL,res,A,Sigma,method='L-BFGS-B',lower=L1,upper=L2,control=list(fnscale=-1))$par 
     # CM
     nu=mean(V)
@@ -165,25 +165,25 @@ if(!nu.fixed & is.numeric(gamma.fixed)){
   for(i in 1:n){
     b0<-b0+t(X[[i]])%*%X[[i]]
     b1<-b1+t(X[[i]])%*%y[i,] }
-  beta0<-solve(b0)%*%b1
+  beta0<-solve2(b0)%*%b1
   res<-matrix(0,n,p)
   for(i in 1:n){res[i,]<-y[i,]-X[[i]]%*%beta0}
   S<-cov(res)
-  invS<-solve(S)
+  invS<-solve2(S)
   B<-matrix.sqrt(S)
   lambda<-as.matrix(moments::skewness(res))
   nugama=c(0.5,gamma.fixed)
   theta0<-c(as.vector(beta0),vech(B),as.vector(lambda),nugama)
   log0= mscn.logL(theta0,y,X)
   Sigma=B%*%B
-  invSigma=solve(Sigma)
+  invSigma=solve2(Sigma)
   delta=lambda/sqrt(1+sum(as.vector(lambda)^2))
-  Delta= matrix.sqrt(solve(Sigma))%*%delta
+  Delta= matrix.sqrt(solve2(Sigma))%*%delta
   a1=Sigma-Delta%*%t(Delta)
   bb=eigen(a1)$values
   { if (sum(bb>0)==p) Gama=a1
   else Gama=Sigma}
-  A=as.vector(t(lambda)%*%solve(B)%*%t(res))
+  A=as.vector(t(lambda)%*%solve2(B)%*%t(res))
   L1<-rbind(1e-3,1e-3)
   L2<-rbind(0.999,0.999)
   criterio=1
@@ -194,14 +194,14 @@ if(!nu.fixed & is.numeric(gamma.fixed)){
   res<-matrix(0,n,p)  
   while((criterio>=prec)&&(cont<=max.iter)&&(bb>=0)){
     cont=cont+1
-    Binv=solve(B)    
+    Binv=solve2(B)    
     for (i in 1:n){
           mu[i,]<-X[[i]]%*%beta0
           res[i,]<-y[i,]-X[[i]]%*%beta0
           d[i]<-as.numeric(t(res[i,])%*%Binv%*%Binv%*%res[i,])
     }
     ### Inicio passo E
-    Gamainv=solve(Gama)  
+    Gamainv=solve2(Gama)  
     nu=nugama[1]
     gama=nugama[2] 
     fy=2*nu*mvtnorm::dmvnorm(res, sigma = Sigma/gama)*pnorm(sqrt(gama)*A)+2*(1-nu)*mvtnorm::dmvnorm(res, sigma = Sigma)*pnorm(A) 
@@ -227,16 +227,16 @@ if(!nu.fixed & is.numeric(gamma.fixed)){
         Delta1=Delta1+ut[i]*resi
         Gama0=Gama0+u[i]*resi%*%t(resi)-ut[i]*(Delta%*%t(resi)+resi%*%t(Delta))+ut2[i]*Delta%*%t(Delta)
     }
-    beta0=solve(beta01)%*%beta02
+    beta0=solve2(beta01)%*%beta02
     Delta=Delta1/sum(ut2)
     Gama=Gama0/n
     Sigma=Gama+Delta%*%t(Delta)
-    invSigma=solve(Sigma)
+    invSigma=solve2(Sigma)
     B=matrix.sqrt(Sigma)
-    Binv=solve(B)
+    Binv=solve2(B)
     delta=Binv%*%Delta
     lambda=delta/sqrt(1-as.numeric(t(Delta)%*%invSigma%*%Delta))
-    A=as.vector(t(lambda)%*%solve(B)%*%t(res))    
+    A=as.vector(t(lambda)%*%solve2(B)%*%t(res))    
     nu=mean(V)
     nugama=c(nu,gama)
     theta=c(as.vector(beta0),vech(B),as.vector(lambda),nugama)
@@ -259,25 +259,25 @@ if(is.numeric(nu.fixed) & !gamma.fixed){
   for(i in 1:n){
     b0<-b0+t(X[[i]])%*%X[[i]]
     b1<-b1+t(X[[i]])%*%y[i,] }
-  beta0<-solve(b0)%*%b1
+  beta0<-solve2(b0)%*%b1
   res<-matrix(0,n,p)
   for(i in 1:n){res[i,]<-y[i,]-X[[i]]%*%beta0}
   S<-cov(res)
-  invS<-solve(S)
+  invS<-solve2(S)
   B<-matrix.sqrt(S)
   lambda<-as.matrix(moments::skewness(res))
   nugama=c(nu.fixed,0.5)
   theta0<-c(as.vector(beta0),vech(B),as.vector(lambda),nugama)
   log0= mscn.logL(theta0,y,X)
   Sigma=B%*%B
-  invSigma=solve(Sigma)
+  invSigma=solve2(Sigma)
   delta=lambda/sqrt(1+sum(as.vector(lambda)^2))
-  Delta= matrix.sqrt(solve(Sigma))%*%delta
+  Delta= matrix.sqrt(solve2(Sigma))%*%delta
   a1=Sigma-Delta%*%t(Delta)
   bb=eigen(a1)$values
   { if (sum(bb>0)==p) Gama=a1
   else Gama=Sigma}
-  A=as.vector(t(lambda)%*%solve(B)%*%t(res))
+  A=as.vector(t(lambda)%*%solve2(B)%*%t(res))
   L1<-rbind(1e-3,1e-3)
   L2<-rbind(0.999,0.999)
   criterio=1
@@ -288,14 +288,14 @@ if(is.numeric(nu.fixed) & !gamma.fixed){
   res<-matrix(0,n,p)  
   while((criterio>=prec)&&(cont<=max.iter)&&(bb>=0)){
     cont=cont+1
-    Binv=solve(B)    
+    Binv=solve2(B)    
     for (i in 1:n){
           mu[i,]<-X[[i]]%*%beta0
           res[i,]<-y[i,]-X[[i]]%*%beta0
           d[i]<-as.numeric(t(res[i,])%*%Binv%*%Binv%*%res[i,])
     }
     ### Inicio passo E
-    Gamainv=solve(Gama)  
+    Gamainv=solve2(Gama)  
     nu=nugama[1]
     gama=nugama[2] 
     fy=2*nu*mvtnorm::dmvnorm(res, sigma = Sigma/gama)*pnorm(sqrt(gama)*A)+2*(1-nu)*mvtnorm::dmvnorm(res, sigma = Sigma)*pnorm(A) 
@@ -321,16 +321,16 @@ if(is.numeric(nu.fixed) & !gamma.fixed){
         Delta1=Delta1+ut[i]*resi
         Gama0=Gama0+u[i]*resi%*%t(resi)-ut[i]*(Delta%*%t(resi)+resi%*%t(Delta))+ut2[i]*Delta%*%t(Delta)
     }
-    beta0=solve(beta01)%*%beta02
+    beta0=solve2(beta01)%*%beta02
     Delta=Delta1/sum(ut2)
     Gama=Gama0/n
     Sigma=Gama+Delta%*%t(Delta)
-    invSigma=solve(Sigma)
+    invSigma=solve2(Sigma)
     B=matrix.sqrt(Sigma)
-    Binv=solve(B)
+    Binv=solve2(B)
     delta=Binv%*%Delta
     lambda=delta/sqrt(1-as.numeric(t(Delta)%*%invSigma%*%Delta))
-    A=as.vector(t(lambda)%*%solve(B)%*%t(res))    
+    A=as.vector(t(lambda)%*%solve2(B)%*%t(res))    
     gamaf<-optim(gama,logscngama,gr=NULL,p,d,V,A,method="L-BFGS-B",lower=0.0001,upper=0.9999,control=list(fnscale=-1))
     gama<-as.numeric(gamaf$par)
     nugama=c(nu,gama)
@@ -355,25 +355,25 @@ if(is.numeric(nu.fixed) & is.numeric(gamma.fixed)){
   for(i in 1:n){
     b0<-b0+t(X[[i]])%*%X[[i]]
     b1<-b1+t(X[[i]])%*%y[i,] }
-  beta0<-solve(b0)%*%b1
+  beta0<-solve2(b0)%*%b1
   res<-matrix(0,n,p)
   for(i in 1:n){res[i,]<-y[i,]-X[[i]]%*%beta0}
   S<-cov(res)
-  invS<-solve(S)
+  invS<-solve2(S)
   B<-matrix.sqrt(S)
   lambda<-as.matrix(moments::skewness(res))
   nugama=c(nu.fixed,gamma.fixed)
   theta0<-c(as.vector(beta0),vech(B),as.vector(lambda),nugama)
   log0= mscn.logL(theta0,y,X)
   Sigma=B%*%B
-  invSigma=solve(Sigma)
+  invSigma=solve2(Sigma)
   delta=lambda/sqrt(1+sum(as.vector(lambda)^2))
-  Delta= matrix.sqrt(solve(Sigma))%*%delta
+  Delta= matrix.sqrt(solve2(Sigma))%*%delta
   a1=Sigma-Delta%*%t(Delta)
   bb=eigen(a1)$values
   { if (sum(bb>0)==p) Gama=a1
   else Gama=Sigma}
-  A=as.vector(t(lambda)%*%solve(B)%*%t(res))
+  A=as.vector(t(lambda)%*%solve2(B)%*%t(res))
   L1<-rbind(1e-3,1e-3)
   L2<-rbind(0.999,0.999)
   criterio=1
@@ -384,14 +384,14 @@ if(is.numeric(nu.fixed) & is.numeric(gamma.fixed)){
   res<-matrix(0,n,p)  
   while((criterio>=prec)&&(cont<=max.iter)&&(bb>=0)){
     cont=cont+1
-    Binv=solve(B)    
+    Binv=solve2(B)    
     for (i in 1:n){
           mu[i,]<-X[[i]]%*%beta0
           res[i,]<-y[i,]-X[[i]]%*%beta0
           d[i]<-as.numeric(t(res[i,])%*%Binv%*%Binv%*%res[i,])
     }
     ### Inicio passo E
-    Gamainv=solve(Gama)  
+    Gamainv=solve2(Gama)  
     nu=nugama[1]
     gama=nugama[2] 
     fy=2*nu*mvtnorm::dmvnorm(res, sigma = Sigma/gama)*pnorm(sqrt(gama)*A)+2*(1-nu)*mvtnorm::dmvnorm(res, sigma = Sigma)*pnorm(A) 
@@ -417,16 +417,16 @@ if(is.numeric(nu.fixed) & is.numeric(gamma.fixed)){
         Delta1=Delta1+ut[i]*resi
         Gama0=Gama0+u[i]*resi%*%t(resi)-ut[i]*(Delta%*%t(resi)+resi%*%t(Delta))+ut2[i]*Delta%*%t(Delta)
     }
-    beta0=solve(beta01)%*%beta02
+    beta0=solve2(beta01)%*%beta02
     Delta=Delta1/sum(ut2)
     Gama=Gama0/n
     Sigma=Gama+Delta%*%t(Delta)
-    invSigma=solve(Sigma)
+    invSigma=solve2(Sigma)
     B=matrix.sqrt(Sigma)
-    Binv=solve(B)
+    Binv=solve2(B)
     delta=Binv%*%Delta
     lambda=delta/sqrt(1-as.numeric(t(Delta)%*%invSigma%*%Delta))
-    A=as.vector(t(lambda)%*%solve(B)%*%t(res))    
+    A=as.vector(t(lambda)%*%solve2(B)%*%t(res))    
     theta=c(as.vector(beta0),vech(B),as.vector(lambda),nugama)
     logL=mscn.logL(theta,y,X)
     criterio=abs(logL-log0)
@@ -453,7 +453,7 @@ if(is.numeric(nu.fixed) & is.numeric(gamma.fixed)){
  if(est.var)
  {
  MI.obs<-  FI.MSCN2(P,y,X,nu,gamma)
- test=try(solve(MI.obs,tol=1e-100),silent=TRUE)
+ test=try(solve2(MI.obs),silent=TRUE)
  se=c()
  if(is.numeric(test) & max(diag(test))<0) 
  {

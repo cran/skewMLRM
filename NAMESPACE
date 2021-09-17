@@ -10,7 +10,8 @@ export("choose.models", "choose.MSMN", "choose.MSMSN", "choose.MSMSNC",
        "FI.MT", "matrix.sqrt", "mbackcrit", "mbacksign",
        "qtgamma", "rMCN", "rMN", "rMSCEC", "rMSCN", "rMSCN2", "rMSL",
        "rMSN", "rMSNC", "rMSSL", "rMSSL2", "rMSSLEC", "rMSTEC",
-       "rMSTN", "rMSTT", "rMT", "vech", "xpnd")
+       "rMSTN", "rMSTT", "rMT", "solve2", "vech", "xpnd")
+importFrom("matrixcalc", "lu.decomposition")
 importFrom("graphics", "abline")
 importFrom("stats", "cov", "dcauchy", "dgamma", "dnorm", "integrate",
              "mahalanobis", "optim", "optimize", "pcauchy", "pchisq",

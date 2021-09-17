@@ -23,7 +23,7 @@ if(!is.matrix(y))
  vecSigmam=P[(m+1):pth]
  B= xpnd(vecSigmam) # Sigma^{1/2}
  Sigma=B%*%B
- invSigma=solve(Sigma)
+ invSigma=solve2(Sigma)
  Binv=matrix.sqrt(invSigma) # Sigma^{-1/2} = B^{-1}
 
  MI=matrix(0,pth,pth)
@@ -68,6 +68,6 @@ if(!is.matrix(y))
     d2elltheta=-1/2*d2logtheta-1/2*d2ditheta
     MI=MI+d2elltheta    
  }
- #print(diag(solve(-MI)))
+ #print(diag(solve2(-MI)))
  return(MI)
  }

@@ -96,6 +96,7 @@ for(i in 1:n) {
 }
 ##See the covariate matrix X
 ##X
+\donttest{
 fit.MN=estimate.MN(y, X)   #Fit the MN distribution 
 res.MN=distMahal(fit.MN)   #Compute the Mahalanobis distances
 plot(res.MN)               #Plot the Mahalanobis distances 
@@ -103,6 +104,7 @@ plot(res.MN)               #Plot the Mahalanobis distances
 fit.MSN=estimate.MSN(y, X)  #Fit the MSN distribution 
 res.MSN=distMahal(fit.MSN)  #Compute the Mahalanobis distances
 plot(res.MSN)               #Plot the Mahalanobis distances 
+}
 }
 % Add one or more standard keywords, see file 'KEYWORDS' in the
 % R documentation directory (show via RShowDoc("KEYWORDS")):

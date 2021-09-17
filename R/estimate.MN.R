@@ -47,15 +47,15 @@ X<-Xs}
     b0<-b0+t(X[[i]])%*%X[[i]]
     b1<-b1+t(X[[i]])%*%y[i,] 
   }
-  beta0<-solve(b0)%*%b1
+  beta0<-solve2(b0)%*%b1
   e<-matrix(0,n,q0)
   for(i in 1:n){
     e[i,]<-y[i,]-X[[i]]%*%beta0
   }
   Sigma<-cov(e)
-  invS<-solve(Sigma)
+  invS<-solve2(Sigma)
   B<-matrix.sqrt(Sigma)
-  invB<-solve(B)
+  invB<-solve2(B)
   P_0<-c(as.vector(beta0),vech(B))
   log0=lmnr(P_0,y,X)
   crit<-1
@@ -69,12 +69,12 @@ X<-Xs}
       b0<-b0+t(X[[i]])%*%invS%*%X[[i]]
       b1<-b1+t(X[[i]])%*%invS%*%y[i,]
     }
-    beta0<-solve(b0)%*%b1
+    beta0<-solve2(b0)%*%b1
     e<-matrix(0,n,m)
     for(i in 1:n){
       e[i,]<-y[i,]-X[[i]]%*%beta0}
     Sigma<-1/n*t(e)%*%e
-    invS<-solve(Sigma)
+    invS<-solve2(Sigma)
     B<-matrix.sqrt(Sigma)
     P<-c(as.vector(beta0),vech(B))
     log1=lmnr(P,y,X)
@@ -89,7 +89,7 @@ conv.problem=1
  if(est.var)
  {
  MI.obs<-  FI.MN(P,y,X)
- test=try(solve(MI.obs,tol=1e-100),silent=TRUE)
+ test=try(solve2(MI.obs),silent=TRUE)
  se=c()
  if(is.numeric(test) & max(diag(test))<0) 
  {

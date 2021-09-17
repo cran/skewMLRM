@@ -98,13 +98,13 @@ p=ncol(X[[1]]);m=nrow(X[[1]])
 eta<-matrix(eta,ncol=1)
 sum1<-matrix(0,ncol=p,nrow=p)
 sum2<-matrix(0,nrow=p,ncol=1)
-  invSigma=solve(Sigma)
+  invSigma=solve2(Sigma)
 for(i in 1:nrow(y))
 {
 sum1<-sum1+t(X[[i]])%*%(a.theta[i]*invSigma+b.theta[i]*eta%*%t(eta))%*%X[[i]]
 sum2<-sum2+t(X[[i]])%*%(b.theta[i]*eta%*%t(eta)%*%y[i,]+a.theta[i]*invSigma%*%y[i,] - c.theta[i]*eta)   
 }
-  solve(sum1,tol=1e-100)%*%sum2
+  solve2(sum1)%*%sum2
 }
 M2.step.MSMSNC<-function(y,X,beta,a.theta)
 {
@@ -127,7 +127,7 @@ for(i in 1:n)
 sum1<-sum1+b.theta[i]*(y[i,]-X[[i]]%*%beta)%*%t(y[i,]-X[[i]]%*%beta)
 sum2<-sum2+c.theta[i]*(y[i,]-X[[i]]%*%beta)
 }
-solve(sum1,tol=1e-100)%*%sum2
+solve2(sum1)%*%sum2
 }
 n=nrow(y)
   p=ncol(y)
@@ -151,14 +151,14 @@ while(i<=max.iter && dif>prec)
    a.theta<-aux$a.theta
 b.theta<-aux$b.theta
 c.theta<-aux$c.theta
-   invSigma=solve(Sigma.last)
+   invSigma=solve2(Sigma.last)
    for (i in 1:n){
           mu[i,]<-X[[i]]%*%beta.last
           res[i,]<-y[i,]-X[[i]]%*%beta.last
           d[i]<-as.numeric(t(res[i,])%*%invSigma%*%res[i,])
     }
     B=matrix.sqrt(Sigma.last)
-    A=as.vector(t(lambda.last)%*%solve(B)%*%t(res))
+    A=as.vector(t(lambda.last)%*%solve2(B)%*%t(res))
     fy=2*nu*mvtnorm::dmvnorm(res, sigma = Sigma.last/gama)*pcauchy(sqrt(gama)*A)+2*(1-nu)*mvtnorm::dmvnorm(res, sigma = Sigma.last)*pcauchy(A)
     V= 2*nu*mvtnorm::dmvnorm(res, sigma = Sigma.last/gama)*pcauchy(sqrt(gama)*A)/fy
     beta.new<-M1.step.MSMSNC(y,X,Sigma.last,c(eta.last),a.theta,b.theta,c.theta)
@@ -194,14 +194,14 @@ while(i<=max.iter && dif>prec)
    a.theta<-aux$a.theta
 b.theta<-aux$b.theta
 c.theta<-aux$c.theta
-   invSigma=solve(Sigma.last)
+   invSigma=solve2(Sigma.last)
    for (i in 1:n){
           mu[i,]<-X[[i]]%*%beta.last
           res[i,]<-y[i,]-X[[i]]%*%beta.last
           d[i]<-as.numeric(t(res[i,])%*%invSigma%*%res[i,])
     }
     B=matrix.sqrt(Sigma.last)
-    A=as.vector(t(lambda.last)%*%solve(B)%*%t(res))
+    A=as.vector(t(lambda.last)%*%solve2(B)%*%t(res))
     fy=2*nu*mvtnorm::dmvnorm(res, sigma = Sigma.last/gama)*pcauchy(sqrt(gama)*A)+2*(1-nu)*mvtnorm::dmvnorm(res, sigma = Sigma.last)*pcauchy(A)
     V= 2*nu*mvtnorm::dmvnorm(res, sigma = Sigma.last/gama)*pcauchy(sqrt(gama)*A)/fy
     beta.new<-M1.step.MSMSNC(y,X,Sigma.last,c(eta.last),a.theta,b.theta,c.theta)
@@ -235,14 +235,14 @@ while(i<=max.iter && dif>prec)
    a.theta<-aux$a.theta
 b.theta<-aux$b.theta
 c.theta<-aux$c.theta
-   invSigma=solve(Sigma.last)
+   invSigma=solve2(Sigma.last)
    for (i in 1:n){
           mu[i,]<-X[[i]]%*%beta.last
           res[i,]<-y[i,]-X[[i]]%*%beta.last
           d[i]<-as.numeric(t(res[i,])%*%invSigma%*%res[i,])
     }
     B=matrix.sqrt(Sigma.last)
-    A=as.vector(t(lambda.last)%*%solve(B)%*%t(res))
+    A=as.vector(t(lambda.last)%*%solve2(B)%*%t(res))
     fy=2*nu*mvtnorm::dmvnorm(res, sigma = Sigma.last/gama)*pcauchy(sqrt(gama)*A)+2*(1-nu)*mvtnorm::dmvnorm(res, sigma = Sigma.last)*pcauchy(A)
     V= 2*nu*mvtnorm::dmvnorm(res, sigma = Sigma.last/gama)*pcauchy(sqrt(gama)*A)/fy
     beta.new<-M1.step.MSMSNC(y,X,Sigma.last,c(eta.last),a.theta,b.theta,c.theta)
@@ -277,14 +277,14 @@ while(i<=max.iter && dif>prec)
    a.theta<-aux$a.theta
 b.theta<-aux$b.theta
 c.theta<-aux$c.theta
-   invSigma=solve(Sigma.last)
+   invSigma=solve2(Sigma.last)
    for (i in 1:n){
           mu[i,]<-X[[i]]%*%beta.last
           res[i,]<-y[i,]-X[[i]]%*%beta.last
           d[i]<-as.numeric(t(res[i,])%*%invSigma%*%res[i,])
     }
     B=matrix.sqrt(Sigma.last)
-    A=as.vector(t(lambda.last)%*%solve(B)%*%t(res))
+    A=as.vector(t(lambda.last)%*%solve2(B)%*%t(res))
     fy=2*nu*mvtnorm::dmvnorm(res, sigma = Sigma.last/gama)*pcauchy(sqrt(gama)*A)+2*(1-nu)*mvtnorm::dmvnorm(res, sigma = Sigma.last)*pcauchy(A)
     beta.new<-M1.step.MSMSNC(y,X,Sigma.last,c(eta.last),a.theta,b.theta,c.theta)
    Sigma.new<-M2.step.MSMSNC(y,X,beta.new,a.theta)
@@ -315,7 +315,7 @@ conv<-ifelse(i<=max.iter & dif<=prec, 0, 1)
  if(est.var)
  {
  MI.obs<-FI.MSCEC(P,y,X,nu.new[1],nu.new[2])
- test=try(solve(MI.obs,tol=1e-100),silent=TRUE)
+ test=try(solve2(MI.obs),silent=TRUE)
  if(is.numeric(test) & max(diag(test))<0) 
  {
  conv.problem=0
@@ -346,7 +346,7 @@ rownames(P)<-c(paste("beta",1:m,sep=""),paste("alpha",indices,sep=""),paste("lam
     b0<-b0+t(X[[i]])%*%X[[i]]
     b1<-b1+t(X[[i]])%*%y[i,] 
   }
-  beta0<-solve(b0)%*%b1
+  beta0<-solve2(b0)%*%b1
   e<-matrix(0,n,p)
   for(i in 1:n){
     e[i,]<-y[i,]-X[[i]]%*%beta0

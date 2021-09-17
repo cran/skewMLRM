@@ -27,7 +27,7 @@ X<-Xs}
   beta=as.matrix(P[1:q])
   Dr=xpnd(P[(q+1):(q+p0)])
   Sigma=Dr%*%Dr
-  Dr.inv=solve(Dr)
+  Dr.inv=solve2(Dr)
   d.sig <- det(Sigma) 
   lambda=as.matrix(P[(q+p0+1):(length(P))])
  

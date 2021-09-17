@@ -12,7 +12,7 @@ function(P,y,X)
   p0=p*(p+1)/2
   b=as.matrix(P[1:q])
   B=xpnd(P[(q+1):(q+p0)])
-  invB=solve(B)
+  invB=solve2(B)
   h=as.matrix(P[(q+p*(p+1)/2+1):(length(P)-2)])
   v=as.numeric(P[length(P)-1])
   g=as.numeric(P[length(P)])

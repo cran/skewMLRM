@@ -51,7 +51,7 @@ X<-Xs}
   beta0<-theta[1:p]
   B<-xpnd(theta[(p+1):(p+q1)])
   Sigma=B%*%B
-  Sigmainv=solve(Sigma)
+  Sigmainv=solve2(Sigma)
   if(dist=="MT" | dist=="MSL") {nu=theta[p+q1+1]}
   if(dist=="MSTN" | dist=="MSSL") {nu=theta[p+q1+q0+1]}
   if(dist=="MCN") {nu=theta[p+q1+1];gamma=theta[p+q1+2]}

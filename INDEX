@@ -19,6 +19,7 @@ plotskewMLRM      Plot the Mahalanobis distances for an object
                   produced by the function distMahal
 rM                Random generation for models in the MSMN,
                   MSMSN, MSSMN and MSMSNC classes.
+solve2            Computes the inverse of a matrix.
 summaryskewMLRM   Extract Model Coefficients in a skewMLRM 
                   fitted model
 vech              Vectorize a symmetric matrix.

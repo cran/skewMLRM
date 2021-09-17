@@ -5,9 +5,9 @@ logsslnu<-function(nu,Y,X,beta0,Sigma,lambda){
 n=nrow(Y)
 p=ncol(Y)
 B=matrix.sqrt(Sigma) 
-Binv=solve(B)
+Binv=solve2(B)
 cnf=(2*pi)^(p/2)*sqrt(det(Sigma))
-auxA=t(lambda)%*%solve(B)
+auxA=t(lambda)%*%solve2(B)
 fy0=rep(0,n)
 for(i in 1:n){
     resi<-matrix(Y[i,])-X[[i]]%*%beta0
@@ -26,12 +26,12 @@ mssl.logL <- function(theta,Y,X){
  p1=p*(p+1)/2
  B= xpnd(theta[(q0+1):(q0+p1)]) # Sigma^{1/2}
  Sigma=B%*%B
- invSigma=solve(Sigma)
+ invSigma=solve2(Sigma)
  Binv=matrix.sqrt(invSigma) # Sigma^{-1/2} = B^{-1}
  lambda=as.matrix(theta[(q0+p1+1):pth],p,1)
  nu=as.numeric(theta[pth+1])
  cnf=(2*pi)^(p/2)*sqrt(det(Sigma))
- auxA=t(lambda)%*%solve(B)
+ auxA=t(lambda)%*%solve2(B)
  fy0=rep(0,n)
  for(i in 1:n){
     resi<-matrix(Y[i,])-X[[i]]%*%beta0
@@ -77,22 +77,22 @@ if(!nu.fixed){
     b0<-b0+t(X[[i]])%*%X[[i]]
     b1<-b1+t(X[[i]])%*%y[i,] 
   }
-  beta0<-solve(b0)%*%b1
+  beta0<-solve2(b0)%*%b1
   e<-matrix(0,n,p)
   for(i in 1:n){
     e[i,]<-y[i,]-X[[i]]%*%beta0
   }
   S<-cov(e)
-  invS<-solve(S)
+  invS<-solve2(S)
   B<-matrix.sqrt(S)
   lambda<-as.matrix(moments::skewness(e))
   nu=5
   theta0<-c(as.vector(beta0),vech(B),as.vector(lambda),nu)
   log0= mssl.logL(theta0,y,X)
   Sigma=B%*%B
-  invSigma=solve(Sigma)
+  invSigma=solve2(Sigma)
   delta=lambda/sqrt(1+sum(as.vector(lambda)^2))
-  Delta= matrix.sqrt(solve(Sigma))%*%delta
+  Delta= matrix.sqrt(solve2(Sigma))%*%delta
   a1=Sigma-Delta%*%t(Delta)
   bb=eigen(a1)$values
   { if (sum(bb>0)==p) Gama=a1
@@ -106,15 +106,15 @@ if(!nu.fixed){
   res<-matrix(0,n,p)
   while((criterio>=prec)&&(cont<=max.iter)&&(bb>=0)){
     cont=cont+1
-    Binv=solve(B)    
+    Binv=solve2(B)    
     for (i in 1:n){
           mu[i,]<-X[[i]]%*%beta0
           res[i,]<-y[i,]-X[[i]]%*%beta0
           d[i]<-as.numeric(t(res[i,])%*%Binv%*%Binv%*%res[i,])
     }
     ### Inicio passo E
-    Gamainv=solve(Gama)
-    A=as.vector(t(lambda)%*%solve(B)%*%t(res)) 
+    Gamainv=solve2(Gama)
+    A=as.vector(t(lambda)%*%solve2(B)%*%t(res)) 
     
     u <- eta1 <- c()
     for (i in 1:n) {
@@ -127,7 +127,7 @@ if(!nu.fixed){
         eta1[i] =2^(nu+p/2)*gamma((2*nu+p+1)/2)*pgamma(1,shape=(2*nu+p+1)/2, rate=(d[i]+A[i]^2)/2)/(sqrt(pi)*((d[i]+A[i]^2)^((2*nu+p+1)/2))*aux22)
                 }
     MT2=1/(1+as.numeric(t(Delta)%*%Gamainv%*%Delta))
-    muT=MT2*as.vector(t(Delta)%*%solve(Gama)%*%t(res))
+    muT=MT2*as.vector(t(Delta)%*%solve2(Gama)%*%t(res))
     ut = u*muT+sqrt(MT2)*eta1
     ut2=u*(muT^2)+MT2+muT*sqrt(MT2)*eta1
     ### Fim passo E
@@ -144,13 +144,13 @@ if(!nu.fixed){
         Delta1=Delta1+ut[i]*resi
         Gama0=Gama0+u[i]*resi%*%t(resi)-ut[i]*(Delta%*%t(resi)+resi%*%t(Delta))+ut2[i]*Delta%*%t(Delta)
     }
-    beta0=solve(beta01)%*%beta02
+    beta0=solve2(beta01)%*%beta02
     Delta=Delta1/sum(ut2)
     Gama=Gama0/n
     Sigma=Gama+Delta%*%t(Delta)
-    invSigma=solve(Sigma)
+    invSigma=solve2(Sigma)
     B=matrix.sqrt(Sigma)
-    Binv=solve(B)
+    Binv=solve2(B)
     delta=Binv%*%Delta
     lambda=delta/sqrt(1-as.numeric(t(delta)%*%delta))    
     #nu=optimize(logsslnu,c(1.01,40),y,X,beta0,Sigma,lambda,maximum=T) #nu,Y,X,beta0,Sigma,lambda
@@ -178,22 +178,22 @@ if(is.numeric(nu.fixed)){
     b0<-b0+t(X[[i]])%*%X[[i]]
     b1<-b1+t(X[[i]])%*%y[i,] 
   }
-  beta0<-solve(b0)%*%b1
+  beta0<-solve2(b0)%*%b1
   e<-matrix(0,n,p)
   for(i in 1:n){
     e[i,]<-y[i,]-X[[i]]%*%beta0
   }
   S<-cov(e)
-  invS<-solve(S)
+  invS<-solve2(S)
   B<-matrix.sqrt(S)
   lambda<-as.matrix(moments::skewness(e))
   nu=nu.fixed
   theta0<-c(as.vector(beta0),vech(B),as.vector(lambda),nu)
   log0= mssl.logL(theta0,y,X)
   Sigma=B%*%B
-  invSigma=solve(Sigma)
+  invSigma=solve2(Sigma)
   delta=lambda/sqrt(1+sum(as.vector(lambda)^2))
-  Delta= matrix.sqrt(solve(Sigma))%*%delta
+  Delta= matrix.sqrt(solve2(Sigma))%*%delta
   a1=Sigma-Delta%*%t(Delta)
   bb=eigen(a1)$values
   { if (sum(bb>0)==p) Gama=a1
@@ -207,15 +207,15 @@ if(is.numeric(nu.fixed)){
   res<-matrix(0,n,p)
   while((criterio>=prec)&&(cont<=max.iter)&&(bb>=0)){
     cont=cont+1
-    Binv=solve(B)    
+    Binv=solve2(B)    
     for (i in 1:n){
           mu[i,]<-X[[i]]%*%beta0
           res[i,]<-y[i,]-X[[i]]%*%beta0
           d[i]<-as.numeric(t(res[i,])%*%Binv%*%Binv%*%res[i,])
     }
     ### Inicio passo E
-    Gamainv=solve(Gama)
-    A=as.vector(t(lambda)%*%solve(B)%*%t(res)) 
+    Gamainv=solve2(Gama)
+    A=as.vector(t(lambda)%*%solve2(B)%*%t(res)) 
     
     u <- eta1 <- c()
     for (i in 1:n) {
@@ -228,7 +228,7 @@ if(is.numeric(nu.fixed)){
         eta1[i] =2^(nu+p/2)*gamma((2*nu+p+1)/2)*pgamma(1,shape=(2*nu+p+1)/2, rate=(d[i]+A[i]^2)/2)/(sqrt(pi)*((d[i]+A[i]^2)^((2*nu+p+1)/2))*aux22)
                 }
     MT2=1/(1+as.numeric(t(Delta)%*%Gamainv%*%Delta))
-    muT=MT2*as.vector(t(Delta)%*%solve(Gama)%*%t(res))
+    muT=MT2*as.vector(t(Delta)%*%solve2(Gama)%*%t(res))
     ut = u*muT+sqrt(MT2)*eta1
     ut2=u*(muT^2)+MT2+muT*sqrt(MT2)*eta1
     ### Fim passo E
@@ -245,13 +245,13 @@ if(is.numeric(nu.fixed)){
         Delta1=Delta1+ut[i]*resi
         Gama0=Gama0+u[i]*resi%*%t(resi)-ut[i]*(Delta%*%t(resi)+resi%*%t(Delta))+ut2[i]*Delta%*%t(Delta)
     }
-    beta0=solve(beta01)%*%beta02
+    beta0=solve2(beta01)%*%beta02
     Delta=Delta1/sum(ut2)
     Gama=Gama0/n
     Sigma=Gama+Delta%*%t(Delta)
-    invSigma=solve(Sigma)
+    invSigma=solve2(Sigma)
     B=matrix.sqrt(Sigma)
-    Binv=solve(B)
+    Binv=solve2(B)
     delta=Binv%*%Delta
     lambda=delta/sqrt(1-as.numeric(t(delta)%*%delta))    
     #V<-optim(nu,logsslnu,gr=NULL,y,X,beta0,Sigma,lambda,method="L-BFGS-B",lower=1.01,upper=40,control=list(fnscale=-1,maxit=50))   
@@ -282,7 +282,7 @@ if(is.numeric(nu.fixed)){
  if(est.var)
  {
  MI.obs<-  FI.MSSL2(P,y,X,nu)
- test=try(solve(MI.obs,tol=1e-100),silent=TRUE)
+ test=try(solve2(MI.obs),silent=TRUE)
  se=c()
  if(is.numeric(test) & max(diag(test))<0) 
  {

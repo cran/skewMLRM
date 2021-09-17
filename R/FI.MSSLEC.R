@@ -77,9 +77,9 @@ X<-Xs}
   Sigma<-matrix(0,ncol=p, nrow=p)
   Sigma[lower.tri(Sigma, diag = TRUE)]<-P[1:(p*(p+1)/2)+m]
   Sigma[upper.tri(Sigma, diag = TRUE)]<-P[1:(p*(p+1)/2)+m]
-  Sinv=solve(Sigma) # Sigma^{-1}
+  Sinv=solve2(Sigma) # Sigma^{-1}
   C=matrix.sqrt(Sigma)
-  Cinv=solve(C)# Sigma^{-1/2}
+  Cinv=solve2(C)# Sigma^{-1/2}
   eta=P[m+(p*(p+1)/2)+1:p]
   lambda=C%*%eta
   #Delta=Sminv%*%lambda  # eta

@@ -8,7 +8,7 @@ function(y,X,max.iter=1000,prec=1e-4,est.var=TRUE,nu.min=2.0001)
   q=ncol(X[[n]])
   b=as.matrix(P[1:q])
   B=xpnd(P[(q+1):(q+p*(p+1)/2)])
-  invB=solve(B)
+  invB=solve2(B)
   h=matrix(0, nrow=p)
   v=as.numeric(P[length(P)])
   d<-matrix(0,n,1)
@@ -23,7 +23,7 @@ lmstvr<-function(v,b,B,h,y,X){
   n=nrow(y)
   p=ncol(y)
   if(missing(X)) {X<-array(1,c(p,1,n))}
-  invB=solve(B)
+  invB=solve2(B)
   d<-matrix(0,n,1)
   e<-matrix(0,n,p)
   for(i in 1:n){
@@ -63,15 +63,15 @@ X<-Xs}
     b0<-b0+t(X[[i]])%*%X[[i]]
     b1<-b1+t(X[[i]])%*%y[i,] 
   }
-  b<-solve(b0)%*%b1
+  b<-solve2(b0)%*%b1
   e<-matrix(0,n,p)
   for(i in 1:n){
     e[i,]<-y[i,]-X[[i]]%*%b
   }
   S<-cov(e)
-  invS<-solve(S)
+  invS<-solve2(S)
   B<-matrix.sqrt(S)
-  invB<-solve(B)
+  invB<-solve2(B)
   h<-matrix(0,nrow=p)
   v<-5
   P_0<-c(as.vector(b),vech(B),as.vector(h),v)
@@ -92,16 +92,16 @@ X<-Xs}
     W<-as.matrix(exp(dnorm(aux,log=TRUE)-pnorm(aux,log.p=TRUE)))
     t<-e%*%invB%*%h+W 
     S<-1/n*(t(e)%*%diag(as.vector(u),n)%*%e)
-    invS<-solve(S)
+    invS<-solve2(S)
     B<-matrix.sqrt(S)
-    invB<-solve(B)
+    invB<-solve2(B)
     b0<-matrix(0,q,q)
     b1<-matrix(0,q,1)
     for(i in 1:n){
       b0<-b0+t(X[[i]])%*%invB%*%(as.numeric(u[i])*diag(p)+h%*%t(h))%*%invB%*%X[[i]]
       b1<-b1+t(X[[i]])%*%(as.numeric(u[i])*(invB%*%invB)%*%y[i,]-as.numeric(t[i])*invB%*%h+invB%*%h%*%t(h)%*%invB%*%y[i,])
     }
-    b<-solve(b0)%*%b1
+    b<-solve2(b0)%*%b1
     V<-optim(v,lmstvr,gr=NULL,b,B,h,y,X,method="L-BFGS-B",lower=nu.min,upper=100,control=list(fnscale=-1,maxit=20))
     v<-as.numeric(V$par)
     P<-c(as.vector(b),vech(B),as.vector(h),v)
@@ -120,7 +120,7 @@ X<-Xs}
  if(est.var)
  {
  MI.obs<-  FI.MT(P,y,X)
- test=try(solve(MI.obs,tol=1e-100),silent=TRUE)
+ test=try(solve2(MI.obs),silent=TRUE)
  se=c()
  if(is.numeric(test) & max(diag(test))<0) 
  {
