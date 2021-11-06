@@ -223,6 +223,9 @@ lista.final$y=fit.complete$y
         }
     }
   se<-"Error";   fit<-lista.final
+if(!is.null(fit$eliminated))
+{names.betas=paste("beta",(1:(ncol(X[[1]])))[-as.numeric(substring(fit$eliminated,5,10))],sep="");
+ names(fit$coefficients)[1:length(names.betas)]=names.betas}
   if(est.var)
   {
   if(fit$dist!="MSTEC" & fit$dist!="MSSLEC" & fit$dist!="MSCEC" & fit$dist!="MSTT" & fit$dist!="MSSL2" & dist!="MSCN2") se<-try(se.est(fit$coefficients,y,fit$X,dist=fit$dist),silent=TRUE)
@@ -231,6 +234,7 @@ lista.final$y=fit.complete$y
   } 
   if(!grepl("Error",se[1])){
   names(se)<-names(fit$coefficients)
+  if(!is.null(fit$eliminated)) names(se)[1:length(names.betas)]=names.betas
  if (fit$class=="MSMSNC") {
   if(fit$dist!="MSCEC")
   {
@@ -297,7 +301,7 @@ AIC=fit$AIC, BIC=fit$BIC, iterations=fit$iterations, conv=fit$conv, dist=fit$dis
  RVAL$choose.crit<-criteria
  RVAL$comment <- fit$comment
  if(!is.null(fit$eliminated)) RVAL$eliminated <- fit$eliminated
- RVAL$y<-y; RVAL$X<-X
+ RVAL$y<-y; RVAL$X<-fit$X
  RVAL$"function"<-"mbackcrit"
  RVAL
 }

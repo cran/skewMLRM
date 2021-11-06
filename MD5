@@ -1,7 +1,7 @@
-ce9291af9e7ed9e15e27953cbddeee3a *DESCRIPTION
+1cddc3ba9f1a45d855cda6e1dc76eddd *DESCRIPTION
 0bf98ffda888ca5bd4edf3d38d83167b *INDEX
 70723ab621a8ef345a45e54a9f195452 *NAMESPACE
-ed7c90b2edbc0b95aea55ab1f9594df2 *NEWS.md
+4069c3e868d0ec6774d70421905cb78b *NEWS.md
 d1725cf1b4cadd461ec04664923e1206 *R/FI.MCN.R
 cd9a6c5d4fc580ff6c6eecb58edd4f40 *R/FI.MN.R
 ff067655ab0aabd8cac81c55319f812b *R/FI.MSCEC.R
@@ -41,8 +41,8 @@ e2e1314ab221f481f42edc9d08d08544 *R/estimate.MSNC.R
 7ff4d2d9e42134be3bc092ce3d4d695d *R/estimate.MSTT.R
 c7fd38bffbf9d104b0604a4c3456def0 *R/estimate.MT.R
 d9762de4ba5d9bee43cc7999aa2172e7 *R/matrix.sqrt.R
-2a5b799e4aa4b11c3ae4af21990651d1 *R/mbackcrit.R
-006d3d896743e8903ee0b40b3dd51b54 *R/mbacksign.R
+d16d1489a1a08b4e10071251ae1b8bcf *R/mbackcrit.R
+1235fa1a496de0331c96930854096cdc *R/mbacksign.R
 2ff490b42e43bedb681c5a017e58ffa8 *R/plot.skewMLRM.R
 d8d61f6c06eaf09acc73c446f0099daf *R/print.skewMLRM.R
 32e5727850cae868e7b10a2eaa179f6a *R/qtgamma.R

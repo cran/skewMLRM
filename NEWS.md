@@ -1,3 +1,6 @@
+### 1.3
+* fixed bugs in mbackcrit and mbacksign functions
+
 ### 1.2
 * added function solve2
 * all matrix inversions are performed with solve2
