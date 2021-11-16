@@ -1,3 +1,6 @@
+### 1.4
+* fixed bugs in choose.MSMSN and MSMSNC functions
+
 ### 1.3
 * fixed bugs in mbackcrit and mbacksign functions
 

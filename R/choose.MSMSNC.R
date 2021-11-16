@@ -59,9 +59,9 @@ if (dist == "MSCEC" | dist=="MSCN2") MI.obs<-FI.dist(P=P, y=y, X=X, nu=nu, gamma
         stop("criteria must be AIC or BIC")
   if (cluster==FALSE){
   fit.msnc=try(estimate.MSNC(y=y,X=X,max.iter=max.iter,prec=prec,est.var=FALSE),silent=TRUE)
-  fit.mstec=try(estimate.MSTEC(y=y,X=X,max.iter=max.iter,prec=prec,est.var=FALSE),silent=TRUE)
-  fit.msslec=try(estimate.MSSLEC(y,X,max.iter=max.iter,prec=prec,est.var=FALSE),silent=TRUE)
-  fit.mscec=try(estimate.MSCEC(y,X,max.iter=max.iter,prec=prec,est.var=FALSE),silent=TRUE)
+  fit.mstec=try(estimate.MSTEC(y=y,X=X,max.iter=max.iter,prec=prec,est.var=FALSE, nu.fixed=FALSE),silent=TRUE)
+  fit.msslec=try(estimate.MSSLEC(y,X,max.iter=max.iter,prec=prec,est.var=FALSE, nu.fixed=FALSE),silent=TRUE)
+  fit.mscec=try(estimate.MSCEC(y,X,max.iter=max.iter,prec=prec,est.var=FALSE, nu.fixed=FALSE, gamma.fixed=FALSE),silent=TRUE)
   }
   else {
    cl0 <- parallel::detectCores()-1
@@ -73,7 +73,9 @@ if (dist == "MSCEC" | dist=="MSCN2") MI.obs<-FI.dist(P=P, y=y, X=X, nu=nu, gamma
      require(skewMLRM)
      XX=kname[j]
      estimate.dist.XX <- get(paste("estimate.", XX, sep = ""), mode = "function")
-     fit4= try(estimate.dist.XX(y=y,X=X,max.iter=max.iter,prec=prec,est.var=FALSE),silent=TRUE)  
+     if(XX=="MSNC") fit4= try(estimate.dist.XX(y=y,X=X,max.iter=max.iter,prec=prec,est.var=FALSE),silent=TRUE)  
+     if(XX=="MSTEC" | XX=="MSSLEC") fit4= try(estimate.dist.XX(y=y,X=X,max.iter=max.iter,prec=prec,est.var=FALSE,nu.fixed=FALSE),silent=TRUE)  
+     if(XX=="MSNC") fit4= try(estimate.dist.XX(y=y,X=X,max.iter=max.iter,prec=prec,est.var=FALSE,nu.fixed=FALSE,gamma.fixed=FALSE),silent=TRUE)  
    }
    fit.msnc=fit4[[1]]
    fit.mstec=fit4[[2]]
