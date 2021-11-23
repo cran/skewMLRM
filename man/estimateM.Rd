@@ -41,14 +41,14 @@ estimate.MSTT(y, X, max.iter = 1000, prec = 1e-04, est.var = TRUE,
 estimate.MSSL2(y, X, max.iter = 1000, prec = 1e-04, est.var = TRUE, 
      nu.fixed = 3, nu.min = 2.0001)
 estimate.MSCN2(y, X, max.iter = 1000, prec = 1e-04, est.var = TRUE, 
-      nu.fixed = 0.1, gamma.fixed = 0.5)
+      nu.fixed = 0.5, gamma.fixed = 0.5)
 estimate.MSNC(y, X, max.iter = 1000, prec = 1e-04, est.var = TRUE)
 estimate.MSTEC(y, X, max.iter = 1000, prec = 1e-04, est.var = TRUE, 
       nu.fixed = 3, nu.min = 2.0001)
 estimate.MSSLEC(y, X, max.iter = 1000, prec = 1e-04, est.var = TRUE, 
       nu.fixed = 3, nu.min = 2.0001)
 estimate.MSCEC(y, X, max.iter = 1000, prec = 1e-04, est.var = TRUE, 
-      nu.fixed = 0.1, gamma.fixed = 0.5)
+      nu.fixed = 0.5, gamma.fixed = 0.5)
 }
 \arguments{
   \item{y}{
@@ -70,7 +70,7 @@ Logical. If TRUE the standard errors are estimated.
 If a numerical value is provided, the estimation consider nu as fixed. To estimate nu,
 use nu.fixed=FALSE. Avaliable for MSTT, MSSL2, MSCN2, MSTEC, MSSLEC and MSCEC distributions.
 For MSTT, MSSL2, MSTEC and MSSLEC, the default value is 3 and nu should be greater than 1. 
-For MSCN2 and MSCEC, the default value is 0.1 and nu should be in the (0,1) interval.
+For MSCN2 and MSCEC, the default value is 0.5 and nu should be in the (0,1) interval.
 }
   \item{gamma.fixed}{
 If a numerical value is provided, the estimation consider gamma as fixed. To estimate gamma,

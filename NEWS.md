@@ -1,3 +1,8 @@
+### 1.5
+* fixed bugs in mbacksign function
+* default values for nu in estimate.MSCN2 and estimate.MSCEC functions were
+  changed by 0.5.
+
 ### 1.4
 * fixed bugs in choose.MSMSN and MSMSNC functions
 

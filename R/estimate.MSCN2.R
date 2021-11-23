@@ -1,5 +1,5 @@
 estimate.MSCN2 <-
-function(y,X,max.iter=1000,prec=1e-4,est.var=TRUE,nu.fixed=0.1,gamma.fixed=0.5){
+function(y,X,max.iter=1000,prec=1e-4,est.var=TRUE,nu.fixed=0.5,gamma.fixed=0.5){
 y.or<-y;X.or<-X
 logscnnu<-function(nugama,res,A,Sigma){
 nu=nugama[1]

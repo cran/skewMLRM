@@ -154,6 +154,7 @@ function (y, X = NULL, max.iter = 1000, prec = 1e-04, dist = "MN",
         stop("y does not have the same number of observations than X")
     tt <- table(unlist(sapply(X, pos.ones)))
     ind.interc <- as.numeric(names(tt)[which(tt == nrow(y))])
+    ind.interc0 <- ind.interc
     if (length(ind.interc) != q) 
         stop("X should be intercept term for each variable")
     m = ncol(X[[1]])
@@ -163,64 +164,67 @@ function (y, X = NULL, max.iter = 1000, prec = 1e-04, dist = "MN",
     if (dist != "MSTEC" & dist != "MSSLEC" & dist != 
         "MSCEC" & dist != "MSTT" & dist != "MSSL2" & 
         dist != "MSCN2") 
-        object.1 <- estimate.dist(y = y, X = X, max.iter = max.iter, 
+        object.0 <- estimate.dist(y = y, X = X, max.iter = max.iter, 
             prec = prec, est.var = TRUE)
     if (dist == "MSTEC" | dist == "MSSLEC" | dist == 
         "MSTT" | dist == "MSSL2") 
-        object.1 <- estimate.dist(y = y, X = X, max.iter = max.iter, 
+        object.0 <- estimate.dist(y = y, X = X, max.iter = max.iter, 
             prec = prec, est.var = TRUE, nu.fixed = nu.fixed, 
             nu.min = nu.min)
     if (dist == "MSCEC" | dist == "MSCN2") 
-        object.1 <- estimate.dist(y = y, X = X, max.iter = max.iter, 
+        object.0 <- estimate.dist(y = y, X = X, max.iter = max.iter, 
             prec = prec, est.var = TRUE, nu.fixed = nu.fixed, 
             gamma.fixed = gamma.fixed)
-    beta.est <- object.1$coefficients[c(1:m)[-ind.interc]]
+    beta.est <- object.0$coefficients[c(1:m)[-ind.interc]]
     if (dist != "MSTEC" & dist != "MSSLEC" & dist != 
         "MSCEC" & dist != "MSTT" & dist != "MSSL2" & 
         dist != "MSCN2") 
-        se <- try(se.est(object.1$coefficients, y, X, dist = dist), 
+        se <- try(se.est(object.0$coefficients, y, X, dist = dist), 
             silent = TRUE)
     if (dist == "MSTEC" | dist == "MSSLEC" | dist == 
         "MSTT" | dist == "MSSL2") 
-        se <- try(se.est(object.1$coefficients, y, X, dist = dist, 
-            nu = object.1$nu), silent = TRUE)
+        se <- try(se.est(object.0$coefficients, y, X, dist = dist, 
+            nu = object.0$nu), silent = TRUE)
     if (dist == "MSCEC" | dist == "MSCN2") 
-        se <- try(se.est(object.1$coefficients, y, X, dist = dist, 
-            nu = object.1$nu, gamma = object.1$gamma), silent = TRUE)
+        se <- try(se.est(object.0$coefficients, y, X, dist = dist, 
+            nu = object.0$nu, gamma = object.0$gamma), silent = TRUE)
     if (!is.numeric(se)) 
         stop("Standard errors can't be estimated: Numerical problems with the inversion of the information matrix")
     ep.beta <- se[c(1:m)[-ind.interc]]
     xmenos.multi <- X
     dim.beta <- length(beta.est)
     test.t <- abs(beta.est/ep.beta)
-    lista.final <- list(coefficients = object.1$coefficients, 
-        logLik = object.1$logLik, AIC = object.1$AIC, BIC = object.1$BIC, 
-        conv = object.1$conv, dist = object.1$dist, class = object.1$class, 
+    lista.final <- list(coefficients = object.0$coefficients, 
+        logLik = object.0$logLik, AIC = object.0$AIC, BIC = object.0$BIC, 
+        conv = object.0$conv, dist = object.0$dist, class = object.0$class, 
         comment = "The final model considered all the betas")
-    lista.final$dist = object.1$dist
-    lista.final$class = object.1$class
+    lista.final$dist = object.0$dist
+    lista.final$class = object.0$class
     lista.final$X <- X
     if (dist == "MSTEC" | dist == "MSSLEC" | dist == 
         "MSTT" | dist == "MSSL2") 
-        lista.final$nu = object.1$nu
+        lista.final$nu = object.0$nu
     if (dist == "MSCEC" | dist == "MSCN2") 
-        lista.final$nu = object.1$nu
-    lista.final$gamma = object.1$gamma
-    criterio <- sum(test.t - z.critico > 0, na.rm = TRUE)
-    if (criterio > 0) {
-        t.min <- c(1:m)[-ind.interc][which.min(test.t)]
-        historico <- c()
-        cont <- sum(is.na(test.t))
-        while (criterio < (length(test.t) - cont) && (dim.beta > 
-            1)) {
-            historico <- c(historico, names(object.1$coefficients)[1:m][t.min])
-            names.betas <- rownames(object.1$coefficients)[1:m][-(t.min)]
-            xmenos.multi <- lapply(xmenos.multi, function(x) {
+        lista.final$nu = object.0$nu
+    lista.final$gamma = object.0$gamma
+    lista.final$eliminated=NULL
+    object.1 <- object.0
+    M <- m
+    names.betas <- names(object.1$coefficients)[1:M]
+    historico <- c()
+    criterio <- sum(test.t - z.critico < 0, na.rm = TRUE) 
+    t.min=NULL
+    
+    if (criterio > 0) {       
+        t.min <- c(1:M)[-ind.interc][which.min(test.t)]
+        while (criterio > 0 && (dim.beta > 0)) {
+            names.betas <- rownames(object.1$coefficients)[1:M][-(t.min)]
+            xmenos.multi <- lapply(X, function(x) {
                 x[, -(t.min), drop = FALSE]
             })
-            m = ncol(xmenos.multi[[1]])
             tt <- table(unlist(sapply(xmenos.multi, pos.ones)))
             ind.interc <- as.numeric(names(tt)[which(tt == nrow(y))])
+            m = ncol(xmenos.multi[[1]])
             if (dist != "MSTEC" & dist != "MSSLEC" & 
                 dist != "MSCEC" & dist != "MSTT" & 
                 dist != "MSSL2" & dist != "MSCN2") 
@@ -235,7 +239,7 @@ function (y, X = NULL, max.iter = 1000, prec = 1e-04, dist = "MN",
                 object.1 <- estimate.dist(y = y, X = xmenos.multi, 
                   max.iter = max.iter, prec = prec, est.var = TRUE, 
                   nu.fixed = nu.fixed, gamma.fixed = gamma.fixed)
-            rownames(object.1$coefficients)[1:m] <- names.betas
+            rownames(object.1$coefficients)[1:m] <- names.betas    
             beta.est <- object.1$coefficients[c(1:m)[-ind.interc]]
             if (dist != "MSTEC" & dist != "MSSLEC" & 
                 dist != "MSCEC" & dist != "MSTT" & 
@@ -253,11 +257,16 @@ function (y, X = NULL, max.iter = 1000, prec = 1e-04, dist = "MN",
             if (!is.numeric(se)) 
                 stop("Standard errors can't be estimated: Numerical problems with the inversion of the information matrix")
             ep.beta <- se[c(1:m)[-ind.interc]]
-            dim.beta <- length(beta.est)
-            test.t <- abs(beta.est/ep.beta)
-            t.min <- c(1:m)[-ind.interc][which.min(test.t)]
-            criterio <- sum(test.t - z.critico > 0, na.rm = TRUE)
-            lista.final <- list(coefficients = object.1$coefficients)
+            dim.beta <- length(beta.est) 
+            test.t <- rep(NA,M)
+            test.t[-c(ind.interc0,t.min)] <- abs(beta.est/ep.beta)
+            t.mink <- which.min(test.t)
+            t.min <- c(t.min,t.mink)
+            criterio <- sum(test.t - z.critico < 0, na.rm = TRUE)             
+        }
+        t.min <-t.min[-length(t.min)]
+        historico <- names(object.0$coefficients)[1:M][t.min]
+        lista.final <- list(coefficients = object.1$coefficients)
             if (dist == "MSTEC" | dist == "MSSLEC" | 
                 dist == "MSTT" | dist == "MSSL2") 
                 lista.final$nu = object.1$nu
@@ -274,7 +283,6 @@ function (y, X = NULL, max.iter = 1000, prec = 1e-04, dist = "MN",
                 length(historico), "betas")
             lista.final$eliminated = historico
             lista.final$X = xmenos.multi
-        }
     }
     se <- "Error"
     fit <- lista.final
@@ -293,7 +301,7 @@ function (y, X = NULL, max.iter = 1000, prec = 1e-04, dist = "MN",
     if (fit$dist == "MSCEC" | fit$dist == "MSCN2") 
         se <- try(se.est(P = fit$coefficients, y = y, X = fit$X, 
             dist = fit$dist, nu = fit$nu, gamma = fit$gamma), 
-            silent = TRUE)
+            silent = TRUE) 
     names(se) <- names(fit$coefficients)
     names(se)[1:length(names.betas)]=names.betas
     if (fit$class == "MSMSNC") {

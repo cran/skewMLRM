@@ -12,7 +12,7 @@ cat("\nUsed function: ",x$"function","\n", sep = "")
     cat("Fitted models: ",pp,"\nSelected model: ",x$selected,"\nClass: ", x$class,"\n\n", sep = "")
   }
   if(substring(x$"function",1,5)=="mback"){
-   cr<-ifelse(x$choose.crit=="sign",paste("significance (",100*x$significance,"%)\n\n",sep=""),x$choose.crit)
+   cr<-ifelse(x$choose.crit=="sign",paste("significance (",100*x$significance,"%)",sep=""),x$choose.crit)
     cat("Fitted model: ",x$dist,"\nClass: ", x$class,"\nMethod to select covariates: ",cr,"\n\n", sep = "")
   }
   if(substring(x$"function",1,8)=="estimate") cat("Fitted model: ",x$dist,"\nClass: ", x$class,"\n\n", sep = "")
