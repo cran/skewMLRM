@@ -1,7 +1,7 @@
-01b5b31c7a08d765e1b9604e13b14dd6 *DESCRIPTION
-0bf98ffda888ca5bd4edf3d38d83167b *INDEX
-70723ab621a8ef345a45e54a9f195452 *NAMESPACE
-77aea93f3d4f7adaa45a5929e099c533 *NEWS.md
+1f6025d2a8efd828d8273ccfe78ac90d *DESCRIPTION
+192f46e634aa7a26488f478fc1a513f7 *INDEX
+7a01f7fb284ad92b42095dfb2a443e81 *NAMESPACE
+306ea4b1864879e8e45f00b581b36477 *NEWS.md
 d1725cf1b4cadd461ec04664923e1206 *R/FI.MCN.R
 cd9a6c5d4fc580ff6c6eecb58edd4f40 *R/FI.MN.R
 ff067655ab0aabd8cac81c55319f812b *R/FI.MSCEC.R
@@ -41,7 +41,7 @@ e2e1314ab221f481f42edc9d08d08544 *R/estimate.MSNC.R
 7ff4d2d9e42134be3bc092ce3d4d695d *R/estimate.MSTT.R
 c7fd38bffbf9d104b0604a4c3456def0 *R/estimate.MT.R
 d9762de4ba5d9bee43cc7999aa2172e7 *R/matrix.sqrt.R
-d16d1489a1a08b4e10071251ae1b8bcf *R/mbackcrit.R
+dc595dd5ce1856a242a40305db98e063 *R/mbackcrit.R
 0f174a98cd720586c86730f15d09427e *R/mbacksign.R
 2ff490b42e43bedb681c5a017e58ffa8 *R/plot.skewMLRM.R
 00e7b8419e658c89ca12e6d30880f9cb *R/print.skewMLRM.R
@@ -63,6 +63,7 @@ ccd64c547fb494e6a9422b34875c8371 *R/rMSN.R
 051a0f85dca602557cbecaf934b78014 *R/rMT.R
 a13c6d5529e229c2590bcfbecb34bdf6 *R/solve2.R
 984293c45a67d62d4e7e2f56ef55a8a3 *R/summary.skewMLRM.R
+c397855c68151b05d4a7aa8496afdfed *R/vcov.skewMLRM.R
 384aa09fee5bcb4ae024ba5b4aa8eaf3 *R/vech.R
 139ed93849e18cc56f16cc06f8db5735 *R/xpnd.R
 86f4b5f61ab44363e549a0ea3e3c4916 *man/FIM.Rd
@@ -78,5 +79,6 @@ dc8d685e756c90fdfca6ff4063dcccf0 *man/mbacksign.Rd
 65756303954b4cf8742b65e614d6bbae *man/solve2.Rd
 777ce8afc74314b345c497b22357d4c7 *man/summaryskewMLRM.Rd
 d7e92e89640fc5bdebcb94254dae7c9e *man/tgamma.Rd
+00dcdc69d126fc3dabd940900fe47d9e *man/vcov.skewMLRM.Rd
 8fc9df63ff276617af70e692f25d87ae *man/vech.Rd
 1a251afe352f34ed5064246841c80fd1 *man/xpnd.Rd

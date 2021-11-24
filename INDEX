@@ -22,5 +22,7 @@ rM                Random generation for models in the MSMN,
 solve2            Computes the inverse of a matrix.
 summaryskewMLRM   Extract Model Coefficients in a skewMLRM 
                   fitted model
+vcovskewMLRM      Calculate Variance-Covariance Matrix for a 
+                  Fitted Model Object
 vech              Vectorize a symmetric matrix.
 xpnd              Reconstitute a symmetric matrix from a vector. 

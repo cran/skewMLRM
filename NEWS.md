@@ -1,3 +1,7 @@
+### 1.6
+* fixed bugs in mbackcrit function
+* S3 method avaliable for vcov function for object in the class "skewMLRM".
+
 ### 1.5
 * fixed bugs in mbacksign function
 * default values for nu in estimate.MSCN2 and estimate.MSCEC functions were

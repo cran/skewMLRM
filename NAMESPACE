@@ -16,7 +16,7 @@ importFrom("graphics", "abline")
 importFrom("stats", "cov", "dcauchy", "dgamma", "dnorm", "integrate",
              "mahalanobis", "optim", "optimize", "pcauchy", "pchisq",
              "pgamma", "pnorm", "pt", "qchisq", "qf", "qgamma", "qnorm",
-             "rbeta", "rbinom", "rgamma", "rnorm", "runif")
+             "rbeta", "rbinom", "rgamma", "rnorm", "runif", "coef")
 importFrom("MASS","mvrnorm")
 importFrom("moments","skewness") 
 importFrom("mvtnorm","dmvnorm","dmvt")
@@ -27,3 +27,4 @@ importFrom("clusterGeneration","genPositiveDefMat")
 S3method(summary, skewMLRM)
 S3method(plot, skewMLRM)
 S3method(print, skewMLRM)
+S3method(vcov, skewMLRM)
