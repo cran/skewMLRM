@@ -1,3 +1,6 @@
+### 1.7
+* ´Fixed bugs related to Rd files for rM.
+
 ### 1.6
 * fixed bugs in mbackcrit function
 * S3 method avaliable for vcov function for object in the class "skewMLRM".

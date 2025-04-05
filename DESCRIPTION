@@ -1,15 +1,15 @@
 Package: skewMLRM
 Type: Package
 Title: Estimation for Scale-Shape Mixtures of Skew-Normal Distributions
-Version: 1.6
-Date: 2021-11-24
+Version: 1.7
+Date: 2025-04-03
 Authors@R: c(person("Clecio", "Ferreira", role = c("aut"), email = "clecio.ferreira@ufjf.edu.br"),
-	person("Diego", "Gallardo", role = c("aut","cre"), email = "diego.gallardo@uda.cl"),
+	person("Diego", "Gallardo", role = c("aut","cre"), email = "dgallardo@ubiobio.cl"),
 	person("Camila", "Zeller", role = "aut", email = "camila.zeller@ufjf.edu.br"))
 Author: Clecio Ferreira [aut],
   Diego Gallardo [aut, cre],
   Camila Zeller [aut]
-Maintainer: Diego Gallardo <diego.gallardo@uda.cl>
+Maintainer: Diego Gallardo <dgallardo@ubiobio.cl>
 Description: Provide data generation and estimation tools for the multivariate scale mixtures of normal 
              presented in Lange and Sinsheimer (1993) <doi:10.2307/1390698>, the multivariate scale 
              mixtures of skew-normal presented in Zeller, Lachos and Vilca (2011) 
@@ -23,6 +23,6 @@ Imports: moments, clusterGeneration, doParallel, parallel, MASS,
 Suggests: sn
 License: GPL (>= 2)
 NeedsCompilation: no
-Packaged: 2021-11-24 02:17:11 UTC; Usuario
+Packaged: 2025-04-04 19:03:51 UTC; Diego
 Repository: CRAN
-Date/Publication: 2021-11-24 08:00:02 UTC
+Date/Publication: 2025-04-05 11:30:02 UTC

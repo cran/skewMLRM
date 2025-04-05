@@ -80,7 +80,7 @@ skew-contaminated-Expected-Cauchy (MSCEC). See Kahrari et al. (2020) for details
 
 Note: the MSN distribution belongs to both, MSMSN and MSSMN classes.
 
-MN used \code{\link{mvrnorm}}. For MT, MSL and MCN, the generation is based on the MSMN class. See Lange and Sinsheimer (1993) for details. 
+MN used \code{mvrnorm}. For MT, MSL and MCN, the generation is based on the MSMN class. See Lange and Sinsheimer (1993) for details. 
 For MSTN, MSSL and MSCN, the generation is based on the MSSMN class. See Ferreira, Lachos and Bolfarine (2016) for details.
 For MSTT, MSSL2 and MSCN2, the generation is based on the multivariate scale mixtures of skew-normal (MSMSN) class.
 See Branco and Dey (2001) for details.
